@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Certificates — APNI PEHCHAN{% endblock %}
+{% block content %}
+<div class="edit-page">
+    <div class="edit-header">
+        <a href="{{ url_for('dashboard') }}" class="back-btn">← Dashboard</a>
+        <h1>🏆 Certificates</h1>
+        <p>Add your certifications. Upload PDF or paste a verification link.</p>
+    </div>
+    <form method="POST" enctype="multipart/form-data" class="edit-form">
+        <div class="form-section">
+            <div class="dynamic-list" id="certList">
+                {% for cert in certificates %}
+                <div class="dynamic-card">
+                    <div class="dynamic-card-header">
+                        <span>🏆 {{ cert.name or 'Certificate' }}</span>
+                        <button type="button" class="remove-row" onclick="this.closest('.dynamic-card').remove()">✕ Remove</button>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Certificate Name *</label>
+                            <input type="text" name="name" value="{{ cert.name or '' }}" placeholder="Python for Data Science – Coursera">
+                        </div>
+                        <div class="form-group">
+                            <label>Verification Link</label>
+                            <input type="url" name="link" value="{{ cert.link or '' }}" placeholder="https://coursera.org/verify/...">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Certificate PDF</label>
+                        <input type="file" name="file" accept=".pdf,image/*" class="file-input">
+                        {% if cert.file %}<span class="file-badge">📎 File uploaded</span>{% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" class="btn-add" id="addCert">+ Add Certificate</button>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Save Certificates →</button>
+            <a href="{{ url_for('dashboard') }}" class="btn-ghost">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.getElementById('addCert').addEventListener('click', () => {
+    const card = document.createElement('div');
+    card.className = 'dynamic-card';
+    card.innerHTML = `<div class="dynamic-card-header"><span>🏆 New Certificate</span>
+        <button type="button" class="remove-row" onclick="this.closest('.dynamic-card').remove()">✕ Remove</button></div>
+        <div class="form-row">
+            <div class="form-group"><label>Certificate Name *</label><input type="text" name="name" placeholder="Certificate Name"></div>
+            <div class="form-group"><label>Verification Link</label><input type="url" name="link" placeholder="https://..."></div>
+        </div>
+        <div class="form-group"><label>Upload PDF</label><input type="file" name="file" accept=".pdf,image/*" class="file-input"></div>`;
+    document.getElementById('certList').appendChild(card);
+});
+</script>
+{% endblock %}

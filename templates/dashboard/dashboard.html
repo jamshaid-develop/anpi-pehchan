@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — APNI PEHCHAN{% endblock %}
+{% block content %}
+<div class="dashboard-page">
+    <div class="dash-sidebar">
+        <div class="dash-user">
+            {% if profile and profile.avatar %}
+                <img src="{{ profile.avatar }}" class="dash-avatar" alt="Avatar">
+            {% else %}
+                <div class="dash-avatar-placeholder">{{ user.name[0].upper() }}</div>
+            {% endif %}
+            <div class="dash-user-info">
+                <div class="dash-user-name">{{ user.name }}</div>
+                <div class="dash-user-title">{{ profile.title if profile and profile.title else 'Add your title →' }}</div>
+            </div>
+        </div>
+        <nav class="dash-nav">
+            <a href="{{ url_for('profile') }}" class="dash-link">👤 Profile & Contacts</a>
+            <a href="{{ url_for('skills') }}" class="dash-link">⚡ Skills</a>
+            <a href="{{ url_for('education') }}" class="dash-link">🎓 Education</a>
+            <a href="{{ url_for('experience') }}" class="dash-link">💼 Experience</a>
+            <a href="{{ url_for('projects') }}" class="dash-link">🚀 Projects</a>
+            <a href="{{ url_for('certificates') }}" class="dash-link">🏆 Certificates</a>
+            <a href="{{ url_for('languages') }}" class="dash-link">🌍 Languages</a>
+            <div class="dash-divider"></div>
+            <a href="{{ url_for('cv_preview') }}" class="dash-link accent">📄 Preview CV</a>
+            <a href="{{ url_for('portfolio') }}" class="dash-link accent">🌐 View Portfolio</a>
+        </nav>
+    </div>
+    <div class="dash-main">
+        <div class="dash-greeting">
+            <h1>Hello, <span>{{ user.name.split()[0] }}</span> 👋</h1>
+            <p>Choose what you want to create or update today.</p>
+        </div>
+
+        <!-- ── Two Main Action Cards ── -->
+        <div class="dash-actions">
+            <a href="{{ url_for('cv_preview') }}" class="action-card action-cv">
+                <div class="action-icon">📄</div>
+                <div class="action-content">
+                    <h3>MAKE CV</h3>
+                    <p>Generate a professional PDF resume from your profile data</p>
+                    <span class="action-cta">Preview & Download →</span>
+                </div>
+            </a>
+            <a href="{{ url_for('portfolio') }}" class="action-card action-portfolio">
+                <div class="action-icon">🌐</div>
+                <div class="action-content">
+                    <h3>MAKE PORTFOLIO</h3>
+                    <p>View your live animated portfolio website</p>
+                    <span class="action-cta">View Portfolio →</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- ── Profile Completion ── -->
+        <div class="completion-card">
+            <h3>Profile Completion</h3>
+            <div class="completion-grid">
+                {% set checks = [
+                    (profile and profile.title, "Title"),
+                    (profile and profile.summary, "Summary"),
+                    (profile and profile.phone, "Phone"),
+                    (user.skills|length > 0, "Skills"),
+                    (user.educations|length > 0, "Education"),
+                    (user.projects|length > 0, "Projects"),
+                    (user.experiences|length > 0, "Experience"),
+                    (user.certificates|length > 0, "Certificates"),
+                ] %}
+                {% for done, label in checks %}
+                <div class="check-item {{ 'done' if done else 'pending' }}">
+                    <span class="check-icon">{{ '✓' if done else '○' }}</span>
+                    <span>{{ label }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% set done_count = checks|selectattr('0')|list|length %}
+            <div class="progress-bar-wrap">
+                <div class="progress-bar-fill" style="width: {{ (done_count / checks|length * 100)|int }}%"></div>
+            </div>
+            <p class="completion-text">{{ done_count }}/{{ checks|length }} sections completed</p>
+        </div>
+
+        <!-- ── Quick Edit Grid ── -->
+        <div class="quick-grid">
+            <a href="{{ url_for('profile') }}" class="quick-card">
+                <span>👤</span><strong>Profile</strong><em>Name, title, bio, contacts</em>
+            </a>
+            <a href="{{ url_for('skills') }}" class="quick-card">
+                <span>⚡</span><strong>Skills</strong><em>{{ user.skills|length }} skills added</em>
+            </a>
+            <a href="{{ url_for('projects') }}" class="quick-card">
+                <span>🚀</span><strong>Projects</strong><em>{{ user.projects|length }} projects added</em>
+            </a>
+            <a href="{{ url_for('education') }}" class="quick-card">
+                <span>🎓</span><strong>Education</strong><em>{{ user.educations|length }} entries</em>
+            </a>
+            <a href="{{ url_for('experience') }}" class="quick-card">
+                <span>💼</span><strong>Experience</strong><em>{{ user.experiences|length }} entries</em>
+            </a>
+            <a href="{{ url_for('certificates') }}" class="quick-card">
+                <span>🏆</span><strong>Certs</strong><em>{{ user.certificates|length }} added</em>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

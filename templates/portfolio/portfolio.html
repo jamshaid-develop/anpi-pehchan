@@ -1,0 +1,650 @@
+       <!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user.name }} — Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ══════════════════════════════════════════
+           APNI PEHCHAN — PORTFOLIO THEME
+        ══════════════════════════════════════════ */
+        :root {
+            --bg:       #080c14;
+            --bg2:      #0d1420;
+            --bg3:      #111927;
+            --surface:  rgba(255,255,255,0.04);
+            --glass:    rgba(255,255,255,0.06);
+            --border:   rgba(255,255,255,0.08);
+            --accent:   #4f8ef7;
+            --accent2:  #7eb3ff;
+            --green:    #3dd68c;
+            --text:     #e8edf5;
+            --text2:    #8a9ab5;
+            --text3:    #4a5568;
+            --radius:   16px;
+            --shadow:   0 24px 64px rgba(0,0,0,0.4);
+        }
+        [data-theme="light"] {
+            --bg:      #f0f4ff;
+            --bg2:     #e8edf8;
+            --bg3:     #dce4f5;
+            --surface: rgba(0,0,0,0.03);
+            --glass:   rgba(255,255,255,0.7);
+            --border:  rgba(0,0,0,0.08);
+            --text:    #1a2035;
+            --text2:   #4a5568;
+            --text3:   #8a9ab5;
+        }
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior: smooth; }
+        body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; line-height:1.6; overflow-x:hidden; }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width:5px; }
+        ::-webkit-scrollbar-track { background:var(--bg); }
+        ::-webkit-scrollbar-thumb { background:var(--accent); border-radius:4px; }
+
+        /* ── Navbar ── */
+        .p-nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:16px 40px;
+            display:flex; align-items:center; justify-content:space-between;
+            background:rgba(8,12,20,0.8); backdrop-filter:blur(20px);
+            border-bottom:1px solid var(--border); transition:all .3s; }
+        [data-theme="light"] .p-nav { background:rgba(240,244,255,0.85); }
+        .p-nav-brand { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; color:var(--accent); }
+        .p-nav-links { display:flex; gap:8px; align-items:center; }
+        .p-nav-links a { color:var(--text2); text-decoration:none; padding:6px 14px; border-radius:8px;
+            font-size:.9rem; transition:.2s; }
+        .p-nav-links a:hover { color:var(--text); background:var(--surface); }
+        .theme-btn { background:var(--surface); border:1px solid var(--border); color:var(--text2);
+            padding:6px 12px; border-radius:8px; cursor:pointer; font-size:1rem; transition:.2s; }
+        .theme-btn:hover { border-color:var(--accent); color:var(--accent); }
+        {% if not public %}
+        .edit-bar { position:fixed; top:70px; right:20px; z-index:99;
+            background:var(--accent); color:#fff; padding:8px 16px; border-radius:10px;
+            text-decoration:none; font-size:.85rem; font-weight:600; box-shadow:var(--shadow); }
+        {% endif %}
+
+        /* ── Section base ── */
+        section { padding:100px 0; }
+        .container { max-width:1100px; margin:0 auto; padding:0 40px; }
+        .sec-label { font-family:'JetBrains Mono',monospace; color:var(--accent); font-size:.78rem;
+            text-transform:uppercase; letter-spacing:.14em; margin-bottom:12px; }
+        .sec-title { font-family:'Syne',sans-serif; font-size:clamp(1.8rem,4vw,2.8rem);
+            font-weight:800; line-height:1.15; margin-bottom:48px; }
+
+        /* ── HERO ── */
+        #hero { min-height:100vh; display:flex; align-items:center; position:relative; overflow:hidden; padding:0; }
+        .hero-bg { position:absolute; inset:0; }
+        .hero-orb { position:absolute; border-radius:50%; filter:blur(80px); opacity:.18; }
+        .hero-orb-1 { width:500px; height:500px; background:var(--accent); top:-100px; right:-100px; animation:drift 8s ease-in-out infinite; }
+        .hero-orb-2 { width:400px; height:400px; background:#7c3aed; bottom:-50px; left:-50px; animation:drift 10s ease-in-out infinite reverse; }
+        @keyframes drift { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(30px,-20px) scale(1.05)} }
+        .hero-grid { position:absolute; inset:0;
+            background-image:linear-gradient(rgba(79,142,247,.04) 1px,transparent 1px),
+                             linear-gradient(90deg,rgba(79,142,247,.04) 1px,transparent 1px);
+            background-size:60px 60px; }
+        .hero-inner { display:grid; grid-template-columns:1fr auto; gap:60px; align-items:center;
+            position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:0 40px; width:100%; }
+        .hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(79,142,247,.1);
+            border:1px solid rgba(79,142,247,.2); border-radius:50px; padding:6px 16px;
+            font-size:.82rem; color:var(--accent2); margin-bottom:24px; }
+        .hero-badge-dot { width:6px; height:6px; background:var(--green); border-radius:50%; animation:pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+        .hero-name { font-family:'Syne',sans-serif; font-size:clamp(2.5rem,6vw,4.5rem);
+            font-weight:800; line-height:1.05; margin-bottom:12px; }
+        .hero-name-accent { color:var(--accent); }
+        .hero-title-line { font-size:clamp(1rem,2vw,1.3rem); color:var(--text2); margin-bottom:20px; font-weight:400; }
+        .hero-summary { color:var(--text2); font-size:1rem; line-height:1.8; max-width:500px; margin-bottom:36px; }
+        .hero-btns { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:48px; }
+        .hero-avatar { width:260px; height:260px; border-radius:50%; object-fit:cover;
+            border:3px solid rgba(79,142,247,.3); box-shadow:0 0 60px rgba(79,142,247,.2); }
+        .hero-avatar-placeholder { width:260px; height:260px; border-radius:50%;
+            background:linear-gradient(135deg,var(--accent),#7c3aed);
+            display:flex; align-items:center; justify-content:center;
+            font-family:'Syne',sans-serif; font-size:5rem; font-weight:800; color:#fff;
+            box-shadow:0 0 60px rgba(79,142,247,.3); }
+        .hero-contacts { display:flex; gap:12px; flex-wrap:wrap; }
+        .hero-contact-link { display:flex; align-items:center; gap:6px; color:var(--text2);
+            text-decoration:none; font-size:.85rem; padding:6px 12px; border-radius:8px;
+            border:1px solid var(--border); transition:.2s; }
+        .hero-contact-link:hover { border-color:var(--accent); color:var(--accent); }
+
+        /* ── Buttons ── */
+        .btn-p { display:inline-flex; align-items:center; gap:8px; padding:12px 28px;
+            border-radius:10px; font-weight:600; font-size:.92rem; text-decoration:none;
+            transition:all .25s; cursor:pointer; border:none; font-family:'DM Sans',sans-serif; }
+        .btn-p-primary { background:var(--accent); color:#fff; }
+        .btn-p-primary:hover { background:#3a7be0; transform:translateY(-2px); box-shadow:0 12px 32px rgba(79,142,247,.4); }
+        .btn-p-ghost { background:transparent; color:var(--text); border:1.5px solid var(--border); }
+        .btn-p-ghost:hover { border-color:var(--accent); color:var(--accent); }
+
+        /* ── ABOUT ── */
+        #about { background:var(--bg2); }
+        .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
+        .about-stats { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+        .about-stat { background:var(--glass); border:1px solid var(--border); border-radius:var(--radius);
+            padding:24px; text-align:center; backdrop-filter:blur(10px); }
+        .about-stat-num { font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; color:var(--accent); }
+        .about-stat-label { color:var(--text2); font-size:.85rem; margin-top:4px; }
+
+        /* ── SKILLS ── */
+        .skills-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+        .skill-item { }
+        .skill-header { display:flex; justify-content:space-between; margin-bottom:8px; }
+        .skill-name { font-weight:600; font-size:.95rem; }
+        .skill-pct { color:var(--accent); font-family:'JetBrains Mono',monospace; font-size:.85rem; }
+        .skill-bar { height:6px; background:var(--surface); border-radius:3px; overflow:hidden; }
+        .skill-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2));
+            border-radius:3px; width:0; transition:width 1.2s cubic-bezier(.4,0,.2,1); }
+
+        /* ── PROJECTS ── */
+        #projects { background:var(--bg2); }
+        .projects-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:24px; }
+        .proj-card { background:var(--glass); border:1px solid var(--border); border-radius:var(--radius);
+            overflow:hidden; transition:all .3s; backdrop-filter:blur(10px); }
+        .proj-card:hover { transform:translateY(-6px); border-color:rgba(79,142,247,.3);
+            box-shadow:0 24px 48px rgba(0,0,0,.3); }
+        .proj-img { width:100%; height:180px; object-fit:cover; }
+        .proj-img-placeholder { width:100%; height:180px;
+            background:linear-gradient(135deg,var(--bg3),var(--bg2));
+            display:flex; align-items:center; justify-content:center; font-size:3rem; }
+        .proj-body { padding:24px; }
+        .proj-name { font-family:'Syne',sans-serif; font-weight:700; font-size:1.15rem; margin-bottom:8px; }
+        .proj-desc { color:var(--text2); font-size:.9rem; line-height:1.7; margin-bottom:16px; }
+        .proj-tech { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+        .tech-tag { background:rgba(79,142,247,.1); color:var(--accent2); border:1px solid rgba(79,142,247,.2);
+            padding:2px 10px; border-radius:50px; font-size:.78rem; font-family:'JetBrains Mono',monospace; }
+        .proj-links { display:flex; gap:10px; }
+        .proj-link { color:var(--text2); text-decoration:none; font-size:.85rem; padding:6px 14px;
+            border:1px solid var(--border); border-radius:8px; transition:.2s; }
+        .proj-link:hover { border-color:var(--accent); color:var(--accent); }
+
+        /* ── EXPERIENCE TIMELINE ── */
+        #experience { }
+        .timeline { position:relative; padding-left:32px; }
+        .timeline::before { content:''; position:absolute; left:8px; top:0; bottom:0;
+            width:2px; background:linear-gradient(var(--accent),transparent); }
+        .timeline-item { position:relative; margin-bottom:40px; }
+        .timeline-dot { position:absolute; left:-28px; top:6px; width:12px; height:12px;
+            border-radius:50%; background:var(--accent); border:2px solid var(--bg);
+            box-shadow:0 0 0 4px rgba(79,142,247,.2); }
+        .timeline-year { font-family:'JetBrains Mono',monospace; color:var(--accent); font-size:.78rem;
+            margin-bottom:4px; }
+        .timeline-role { font-family:'Syne',sans-serif; font-weight:700; font-size:1.1rem; margin-bottom:6px; }
+        .timeline-desc { color:var(--text2); font-size:.9rem; line-height:1.7; }
+
+        /* ── CERTIFICATES ── */
+        #certificates { background:var(--bg2); }
+        .certs-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:20px; }
+        .cert-card { background:var(--glass); border:1px solid var(--border); border-radius:var(--radius);
+            padding:24px; display:flex; align-items:center; gap:16px; transition:.3s;
+            backdrop-filter:blur(10px); }
+        .cert-card:hover { border-color:rgba(79,142,247,.3); transform:translateY(-3px); }
+        .cert-icon { font-size:2rem; }
+        .cert-name { font-weight:600; font-size:.95rem; margin-bottom:6px; }
+        .cert-link { color:var(--accent); text-decoration:none; font-size:.82rem; }
+
+        /* ── SERVICES ── */
+        .services-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:20px; }
+        .service-card { background:var(--glass); border:1px solid var(--border); border-radius:var(--radius);
+            padding:28px 24px; text-align:center; backdrop-filter:blur(10px); transition:.3s; }
+        .service-card:hover { border-color:rgba(79,142,247,.3); transform:translateY(-4px); }
+        .service-icon { font-size:2.2rem; margin-bottom:12px; }
+        .service-name { font-family:'Syne',sans-serif; font-weight:700; }
+
+        /* ── EDUCATION ── */
+        #education { }
+        .edu-grid { display:grid; gap:16px; }
+        .edu-card { background:var(--glass); border:1px solid var(--border); border-radius:var(--radius);
+            padding:24px; display:grid; grid-template-columns:1fr auto; gap:16px;
+            backdrop-filter:blur(10px); transition:.3s; }
+        .edu-card:hover { border-color:rgba(79,142,247,.2); }
+        .edu-degree { font-family:'Syne',sans-serif; font-weight:700; font-size:1.05rem; }
+        .edu-institute { color:var(--text2); font-size:.9rem; margin-top:4px; }
+        .edu-batch { font-family:'JetBrains Mono',monospace; color:var(--accent); font-size:.85rem;
+            text-align:right; white-space:nowrap; }
+
+        /* ── CONTACT ── */
+        #contact { background:var(--bg2); }
+        .contact-grid { display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:start; }
+        .contact-links { display:flex; flex-direction:column; gap:12px; }
+        .contact-item { display:flex; align-items:center; gap:14px; color:var(--text);
+            text-decoration:none; padding:16px 20px; border-radius:var(--radius);
+            border:1px solid var(--border); background:var(--glass); transition:.3s; }
+        .contact-item:hover { border-color:rgba(79,142,247,.3); transform:translateX(4px); }
+        .contact-item-icon { font-size:1.3rem; }
+        .contact-item-label { font-size:.78rem; color:var(--text2); }
+        .contact-item-value { font-weight:600; font-size:.9rem; }
+
+        /* ── Scroll Reveal ── */
+        .reveal { opacity:0; transform:translateY(30px); transition:opacity .7s ease, transform .7s ease; }
+        .reveal.visible { opacity:1; transform:translateY(0); }
+
+        /* ── Footer ── */
+        .p-footer { text-align:center; padding:40px; color:var(--text3); font-size:.85rem;
+            border-top:1px solid var(--border); }
+        .p-footer strong { color:var(--accent); }
+
+        /* ── Mobile ── */
+        @media (max-width:768px) {
+            .hero-inner { grid-template-columns:1fr; text-align:center; }
+            .hero-avatar, .hero-avatar-placeholder { width:160px; height:160px; font-size:3rem; margin:0 auto; }
+            .about-grid, .contact-grid, .skills-grid { grid-template-columns:1fr; }
+            .p-nav { padding:14px 20px; }
+            .p-nav-links a { display:none; }
+            section { padding:70px 0; }
+            .container { padding:0 20px; }
+        }
+
+        /* Service icons map */
+        .si-python::before { content:'🐍'; }
+        .si-ml::before { content:'🤖'; }
+        .si-web::before { content:'🌐'; }
+        .si-db::before { content:'🗄️'; }
+        .si-api::before { content:'⚡'; }
+        .si-data::before { content:'📊'; }
+        .si-ui::before { content:'🎨'; }
+        .si-devops::before { content:'⚙️'; }
+    </style>
+</head>
+<body>
+
+<!-- ── Navbar ── -->
+<nav class="p-nav" id="pNav">
+    <div class="p-nav-brand">{{ user.name.split()[0].upper() }}</div>
+    <div class="p-nav-links">
+        <a href="#about">About</a>
+        {% if skills %}<a href="#skills">Skills</a>{% endif %}
+        {% if projects %}<a href="#projects">Projects</a>{% endif %}
+        {% if experiences %}<a href="#experience">Journey</a>{% endif %}
+        {% if certificates %}<a href="#certificates">Certs</a>{% endif %}
+        <a href="#contact">Contact</a>
+        <button class="theme-btn" id="themeBtn" title="Toggle theme">☀</button>
+        <a href="{{ url_for('cv_download') }}" class="btn-p btn-p-primary" style="padding:8px 18px;font-size:.85rem;">↓ CV</a>
+    </div>
+</nav>
+
+{% if not public %}
+<a href="{{ url_for('dashboard') }}" class="edit-bar">✏️ Edit Profile</a>
+{% endif %}
+
+<!-- ══════════════════════
+     HERO SECTION
+══════════════════════ -->
+<section id="hero">
+    <div class="hero-bg">
+        <div class="hero-orb hero-orb-1"></div>
+        <div class="hero-orb hero-orb-2"></div>
+        <div class="hero-grid"></div>
+    </div>
+    <div class="hero-inner">
+        <div class="hero-left">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                Available for opportunities
+            </div>
+            <h1 class="hero-name">
+                {{ user.name.split()[0] }}<br>
+                <span class="hero-name-accent">{{ ' '.join(user.name.split()[1:]) or '' }}</span>
+            </h1>
+            {% if profile and profile.title %}
+            <p class="hero-title-line">{{ profile.title }}</p>
+            {% endif %}
+            {% if profile and profile.summary %}
+            <p class="hero-summary">{{ profile.summary[:200] }}</p>
+            {% endif %}
+            <div class="hero-btns">
+                <a href="#contact" class="btn-p btn-p-primary">Hire Me →</a>
+                <a href="#projects" class="btn-p btn-p-ghost">View Projects</a>
+                <a href="{{ url_for('cv_download') }}" class="btn-p btn-p-ghost">↓ Download CV</a>
+            </div>
+            <div class="hero-contacts">
+                {% if profile %}
+                    {% if profile.email %}<a href="mailto:{{ profile.email }}" class="hero-contact-link">✉ {{ profile.email }}</a>{% endif %}
+                    {% if profile.github %}<a href="{{ profile.github }}" target="_blank" class="hero-contact-link">⌥ GitHub</a>{% endif %}
+                    {% if profile.linkedin %}<a href="{{ profile.linkedin }}" target="_blank" class="hero-contact-link">in LinkedIn</a>{% endif %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="hero-right">
+            {% if profile and profile.avatar %}
+                <img src="{{ profile.avatar }}" class="hero-avatar" alt="{{ user.name }}">
+            {% else %}
+                <div class="hero-avatar-placeholder">{{ user.name[0].upper() }}</div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════
+     ABOUT SECTION
+══════════════════════ -->
+<section id="about">
+    <div class="container">
+        <div class="sec-label reveal">About Me</div>
+        <div class="about-grid">
+            <div class="reveal">
+                <h2 class="sec-title" style="margin-bottom:20px;">Who I Am</h2>
+                <p style="color:var(--text2);line-height:1.9;font-size:1rem;">
+                    {{ profile.summary if profile and profile.summary else "I am a passionate developer dedicated to building real-world solutions." }}
+                </p>
+                {% if profile and profile.city %}
+                <p style="color:var(--text3);margin-top:16px;font-size:.9rem;">📍 {{ profile.city }}</p>
+                {% endif %}
+            </div>
+            <div class="about-stats reveal">
+                <div class="about-stat">
+                    <div class="about-stat-num">{{ projects|length }}</div>
+                    <div class="about-stat-label">Projects Built</div>
+                </div>
+                <div class="about-stat">
+                    <div class="about-stat-num">{{ skills|length }}</div>
+                    <div class="about-stat-label">Skills Mastered</div>
+                </div>
+                <div class="about-stat">
+                    <div class="about-stat-num">{{ certificates|length }}</div>
+                    <div class="about-stat-label">Certificates</div>
+                </div>
+                <div class="about-stat">
+                    <div class="about-stat-num">{{ experiences|length }}</div>
+                    <div class="about-stat-label">Experiences</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════
+     SKILLS SECTION
+══════════════════════ -->
+{% if skills %}
+<section id="skills">
+    <div class="container">
+        <div class="sec-label reveal">Technical Skills</div>
+        <h2 class="sec-title reveal">What I Work With</h2>
+        <div class="skills-grid">
+            {% for skill in skills %}
+            <div class="skill-item reveal">
+                <div class="skill-header">
+                    <span class="skill-name">{{ skill.name }}</span>
+                    <span class="skill-pct">{{ skill.level }}%</span>
+                </div>
+                <div class="skill-bar">
+                    <div class="skill-fill" data-width="{{ skill.level }}"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ══════════════════════
+     PROJECTS SECTION
+══════════════════════ -->
+{% if projects %}
+<section id="projects">
+    <div class="container">
+        <div class="sec-label reveal">Portfolio</div>
+        <h2 class="sec-title reveal">My Projects</h2>
+        <div class="projects-grid">
+            {% for proj in projects|sort(attribute='order') %}
+            <div class="proj-card reveal">
+                {% if proj.image %}
+                    <img src="{{ proj.image }}" class="proj-img" alt="{{ proj.name }}">
+                {% else %}
+                    <div class="proj-img-placeholder">🚀</div>
+                {% endif %}
+                <div class="proj-body">
+                    <div class="proj-name">{{ proj.name }}</div>
+                    {% if proj.description %}
+                    <p class="proj-desc">{{ proj.description[:120] }}{% if proj.description|length > 120 %}...{% endif %}</p>
+                    {% endif %}
+                    {% if proj.tech_stack %}
+                    <div class="proj-tech">
+                        {% for tech in proj.tech_stack.split(',') %}
+                        <span class="tech-tag">{{ tech.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="proj-links">
+                        {% if proj.live_link %}<a href="{{ proj.live_link }}" target="_blank" class="proj-link">🔗 Live Demo</a>{% endif %}
+                        {% if proj.github_link %}<a href="{{ proj.github_link }}" target="_blank" class="proj-link">⌥ GitHub</a>{% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ══════════════════════
+     EXPERIENCE TIMELINE
+══════════════════════ -->
+{% if experiences %}
+<section id="experience">
+    <div class="container">
+        <div class="sec-label reveal">Career</div>
+        <h2 class="sec-title reveal">My Journey</h2>
+        <div class="timeline">
+            {% for exp in experiences|sort(attribute='order') %}
+            <div class="timeline-item reveal">
+                <div class="timeline-dot"></div>
+                {% if exp.year %}<div class="timeline-year">{{ exp.year }}</div>{% endif %}
+                <div class="timeline-role">{{ exp.role }}</div>
+                {% if exp.description %}<p class="timeline-desc">{{ exp.description }}</p>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ══════════════════════
+     EDUCATION SECTION
+══════════════════════ -->
+{% if educations %}
+<section id="education">
+    <div class="container">
+        <div class="sec-label reveal">Education</div>
+        <h2 class="sec-title reveal">Academic Background</h2>
+        <div class="edu-grid">
+            {% for edu in educations|sort(attribute='order') %}
+            <div class="edu-card reveal">
+                <div>
+                    <div class="edu-degree">{{ edu.degree }}</div>
+                    <div class="edu-institute">{{ edu.institute }}{% if edu.city %}, {{ edu.city }}{% endif %}</div>
+                </div>
+                {% if edu.batch %}<div class="edu-batch">{{ edu.batch }}</div>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ══════════════════════
+     CERTIFICATES SECTION
+══════════════════════ -->
+{% if certificates %}
+<section id="certificates">
+    <div class="container">
+        <div class="sec-label reveal">Credentials</div>
+        <h2 class="sec-title reveal">Certifications</h2>
+        <div class="certs-grid">
+            {% for cert in certificates|sort(attribute='order') %}
+            <div class="cert-card reveal">
+                <div class="cert-icon">🏆</div>
+                <div>
+                    <div class="cert-name">{{ cert.name }}</div>
+                    {% if cert.link %}<a href="{{ cert.link }}" target="_blank" class="cert-link">View Certificate →</a>
+                    {% elif cert.file %}<a href="{{ cert.file }}" target="_blank" class="cert-link">View PDF →</a>{% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ══════════════════════
+     SERVICES SECTION
+══════════════════════ -->
+{% if services %}
+<section id="services">
+    <div class="container">
+        <div class="sec-label reveal">What I Offer</div>
+        <h2 class="sec-title reveal">Services</h2>
+        <div class="services-grid">
+            {% set service_icons = {
+                "Python Automation":"🐍","Machine Learning":"🤖","Web Development":"🌐",
+                "Database Design":"🗄️","API Development":"⚡","Data Analysis":"📊",
+                "UI/UX Design":"🎨","DevOps":"⚙️"
+            } %}
+            {% for svc in services %}
+            <div class="service-card reveal">
+                <div class="service-icon">{{ service_icons.get(svc, '💡') }}</div>
+                <div class="service-name">{{ svc }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ══════════════════════
+     LANGUAGES SECTION
+══════════════════════ -->
+{% if languages %}
+<section id="languages">
+    <div class="container">
+        <div class="sec-label reveal">Communication</div>
+        <h2 class="sec-title reveal">Languages</h2>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;">
+            {% for lang in languages %}
+            <div class="cert-card reveal" style="padding:16px 24px;">
+                <div class="cert-icon">🌍</div>
+                <div>
+                    <div class="cert-name">{{ lang.name }}</div>
+                    <div style="color:var(--accent);font-size:.82rem;">{{ lang.level }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ══════════════════════
+     CONTACT SECTION
+══════════════════════ -->
+<section id="contact">
+    <div class="container">
+        <div class="sec-label reveal">Get In Touch</div>
+        <h2 class="sec-title reveal">Let's Connect</h2>
+        {% if profile %}
+        <div class="contact-grid">
+            <div class="contact-links reveal">
+                {% if profile.email %}
+                <a href="mailto:{{ profile.email }}" class="contact-item">
+                    <span class="contact-item-icon">✉️</span>
+                    <div><div class="contact-item-label">Email</div><div class="contact-item-value">{{ profile.email }}</div></div>
+                </a>
+                {% endif %}
+                {% if profile.whatsapp %}
+                <a href="https://wa.me/{{ profile.whatsapp|replace('+','') }}" target="_blank" class="contact-item">
+                    <span class="contact-item-icon">💬</span>
+                    <div><div class="contact-item-label">WhatsApp</div><div class="contact-item-value">{{ profile.whatsapp }}</div></div>
+                </a>
+                {% endif %}
+                {% if profile.phone %}
+                <a href="tel:{{ profile.phone }}" class="contact-item">
+                    <span class="contact-item-icon">📞</span>
+                    <div><div class="contact-item-label">Phone</div><div class="contact-item-value">{{ profile.phone }}</div></div>
+                </a>
+                {% endif %}
+                {% if profile.github %}
+                <a href="{{ profile.github }}" target="_blank" class="contact-item">
+                    <span class="contact-item-icon">⌥</span>
+                    <div><div class="contact-item-label">GitHub</div><div class="contact-item-value">View my code</div></div>
+                </a>
+                {% endif %}
+                {% if profile.linkedin %}
+                <a href="{{ profile.linkedin }}" target="_blank" class="contact-item">
+                    <span class="contact-item-icon">💼</span>
+                    <div><div class="contact-item-label">LinkedIn</div><div class="contact-item-value">Connect professionally</div></div>
+                </a>
+                {% endif %}
+            </div>
+            <div class="reveal" style="padding:40px;background:var(--glass);border:1px solid var(--border);border-radius:var(--radius);backdrop-filter:blur(10px);">
+                <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.3rem;margin-bottom:8px;">
+                    Open to Opportunities
+                </h3>
+                <p style="color:var(--text2);font-size:.95rem;line-height:1.8;margin-bottom:24px;">
+                    Whether you have a project in mind, a job opportunity, or just want to say hi — my inbox is always open.
+                </p>
+                <a href="mailto:{{ profile.email or '' }}" class="btn-p btn-p-primary">Send Email →</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer class="p-footer">
+    <p>Built with <strong>APNI PEHCHAN</strong> · Developed by <strong>Jamshaid Nawaz</strong> · © {{ year }}</p>
+    {% if not public %}
+    <p style="margin-top:8px;font-size:.78rem;">
+        🔗 Share: <code>{{ request.host_url }}portfolio/public/{{ user.id }}</code>
+    </p>
+    {% endif %}
+</footer>
+
+<script>
+// ── Theme Toggle ──
+const btn = document.getElementById('themeBtn');
+const html = document.documentElement;
+let dark = localStorage.getItem('theme') !== 'light';
+html.setAttribute('data-theme', dark ? 'dark' : 'light');
+btn.textContent = dark ? '☀' : '🌙';
+btn.addEventListener('click', () => {
+    dark = !dark;
+    html.setAttribute('data-theme', dark ? 'dark' : 'light');
+    btn.textContent = dark ? '☀' : '🌙';
+    localStorage.setItem('theme', dark ? 'dark' : 'light');
+});
+
+// ── Scroll Reveal ──
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+            setTimeout(() => entry.target.classList.add('visible'), i * 60);
+            observer.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.1 });
+reveals.forEach(el => observer.observe(el));
+
+// ── Skill Bar Animation ──
+document.querySelectorAll('.skill-fill').forEach(bar => {
+    const obs = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting) {
+            bar.style.width = bar.dataset.width + '%';
+            obs.disconnect();
+        }
+    }, { threshold: 0.5 });
+    obs.observe(bar);
+});
+
+// ── Navbar scroll effect ──
+window.addEventListener('scroll', () => {
+    document.getElementById('pNav').style.padding =
+        window.scrollY > 60 ? '10px 40px' : '16px 40px';
+});
+</script>
+</body>
+</html>

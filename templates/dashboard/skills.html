@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Skills — APNI PEHCHAN{% endblock %}
+{% block content %}
+<div class="edit-page">
+    <div class="edit-header">
+        <a href="{{ url_for('dashboard') }}" class="back-btn">← Dashboard</a>
+        <h1>⚡ Skills</h1>
+        <p>Add your skills with proficiency levels. These appear as animated bars in your portfolio.</p>
+    </div>
+    <form method="POST" class="edit-form">
+        <div class="form-section">
+            <div class="dynamic-list" id="skillsList">
+                {% for skill in skills %}
+                <div class="dynamic-row">
+                    <input type="text" name="skill_name" value="{{ skill.name }}" placeholder="e.g. Python">
+                    <div class="range-wrap">
+                        <input type="range" name="skill_level" min="10" max="100" step="5" value="{{ skill.level }}"
+                               oninput="this.nextElementSibling.textContent = this.value + '%'">
+                        <span class="range-val">{{ skill.level }}%</span>
+                    </div>
+                    <button type="button" class="remove-row" onclick="this.parentElement.remove()">✕</button>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" class="btn-add" id="addSkill">+ Add Skill</button>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Save Skills →</button>
+            <a href="{{ url_for('dashboard') }}" class="btn-ghost">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.getElementById('addSkill').addEventListener('click', () => {
+    const row = document.createElement('div');
+    row.className = 'dynamic-row';
+    row.innerHTML = `<input type="text" name="skill_name" placeholder="e.g. Python">
+    <div class="range-wrap">
+        <input type="range" name="skill_level" min="10" max="100" step="5" value="80"
+               oninput="this.nextElementSibling.textContent = this.value + '%'">
+        <span class="range-val">80%</span>
+    </div>
+    <button type="button" class="remove-row" onclick="this.parentElement.remove()">✕</button>`;
+    document.getElementById('skillsList').appendChild(row);
+});
+</script>
+{% endblock %}

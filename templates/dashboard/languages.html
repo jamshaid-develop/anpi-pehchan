@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Languages — APNI PEHCHAN{% endblock %}
+{% block content %}
+<div class="edit-page">
+    <div class="edit-header">
+        <a href="{{ url_for('dashboard') }}" class="back-btn">← Dashboard</a>
+        <h1>🌍 Languages</h1>
+        <p>Add languages you speak. Leave empty to hide this section.</p>
+    </div>
+    <form method="POST" class="edit-form">
+        <div class="form-section">
+            <div class="dynamic-list" id="langList">
+                {% for lang in languages %}
+                <div class="dynamic-row">
+                    <input type="text" name="name" value="{{ lang.name }}" placeholder="English">
+                    <select name="level">
+                        {% for lvl in ["Native","Fluent","Advanced","Intermediate","Basic"] %}
+                        <option value="{{ lvl }}" {{ 'selected' if lang.level == lvl else '' }}>{{ lvl }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="button" class="remove-row" onclick="this.parentElement.remove()">✕</button>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" class="btn-add" id="addLang">+ Add Language</button>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Save Languages →</button>
+            <a href="{{ url_for('dashboard') }}" class="btn-ghost">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.getElementById('addLang').addEventListener('click', () => {
+    const row = document.createElement('div');
+    row.className = 'dynamic-row';
+    row.innerHTML = `<input type="text" name="name" placeholder="Language">
+    <select name="level">
+        <option>Native</option><option>Fluent</option><option>Advanced</option>
+        <option>Intermediate</option><option>Basic</option>
+    </select>
+    <button type="button" class="remove-row" onclick="this.parentElement.remove()">✕</button>`;
+    document.getElementById('langList').appendChild(row);
+});
+</script>
+{% endblock %}

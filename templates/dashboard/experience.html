@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Experience — APNI PEHCHAN{% endblock %}
+{% block content %}
+<div class="edit-page">
+    <div class="edit-header">
+        <a href="{{ url_for('dashboard') }}" class="back-btn">← Dashboard</a>
+        <h1>💼 Experience</h1>
+        <p>Add your work experience or freelance journey. Appears as a timeline in your portfolio.</p>
+    </div>
+    <form method="POST" class="edit-form">
+        <div class="form-section">
+            <div class="dynamic-list" id="expList">
+                {% for exp in experiences %}
+                <div class="dynamic-card">
+                    <div class="dynamic-card-header">
+                        <span>Experience Entry</span>
+                        <button type="button" class="remove-row" onclick="this.closest('.dynamic-card').remove()">✕ Remove</button>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Role / Title</label>
+                            <input type="text" name="role" value="{{ exp.role or '' }}" placeholder="Python Developer">
+                        </div>
+                        <div class="form-group">
+                            <label>Year / Period</label>
+                            <input type="text" name="year" value="{{ exp.year or '' }}" placeholder="2023 – Present">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea name="description" rows="3" placeholder="Describe your responsibilities...">{{ exp.description or '' }}</textarea>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" class="btn-add" id="addExp">+ Add Experience</button>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Save Experience →</button>
+            <a href="{{ url_for('dashboard') }}" class="btn-ghost">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.getElementById('addExp').addEventListener('click', () => {
+    const card = document.createElement('div');
+    card.className = 'dynamic-card';
+    card.innerHTML = `
+        <div class="dynamic-card-header">
+            <span>Experience Entry</span>
+            <button type="button" class="remove-row" onclick="this.closest('.dynamic-card').remove()">✕ Remove</button>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Role / Title</label>
+                <input type="text" name="role" placeholder="Python Developer">
+            </div>
+            <div class="form-group">
+                <label>Year / Period</label>
+                <input type="text" name="year" placeholder="2023 – Present">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea name="description" rows="3" placeholder="Describe responsibilities..."></textarea>
+        </div>`;
+    document.getElementById('expList').appendChild(card);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block title %}APNI PEHCHAN — Build Your Identity{% endblock %}
+{% block content %}
+
+<!-- ── HERO ── -->
+<section class="hero">
+    <div class="hero-bg">
+        <div class="hero-orb orb-1"></div>
+        <div class="hero-orb orb-2"></div>
+        <div class="hero-grid"></div>
+    </div>
+    <div class="hero-content">
+        <div class="hero-badge animate-in" style="--delay:0s">
+            <span class="badge-dot"></span> Personal Identity Builder System
+        </div>
+        <h1 class="hero-title animate-in" style="--delay:0.1s">
+            Build Your<br>
+            <span class="hero-accent">Digital Identity</span><br>
+            In Minutes
+        </h1>
+        <p class="hero-sub animate-in" style="--delay:0.2s">
+            Create a professional CV and a stunning portfolio website — all from one platform.
+            No design skills needed. Just your story.
+        </p>
+        <div class="hero-actions animate-in" style="--delay:0.3s">
+            <a href="{{ url_for('register') }}" class="btn-primary">
+                Start Building Free →
+            </a>
+            <a href="{{ url_for('login') }}" class="btn-ghost">
+                I Have an Account
+            </a>
+        </div>
+        <div class="hero-stats animate-in" style="--delay:0.4s">
+            <div class="stat"><span class="stat-num">2</span><span class="stat-label">Tools in One</span></div>
+            <div class="stat-div"></div>
+            <div class="stat"><span class="stat-num">PDF</span><span class="stat-label">CV Output</span></div>
+            <div class="stat-div"></div>
+            <div class="stat"><span class="stat-num">Live</span><span class="stat-label">Portfolio Site</span></div>
+        </div>
+    </div>
+    <div class="hero-visual animate-in" style="--delay:0.2s">
+        <div class="mockup-card">
+            <div class="mockup-header">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+                <span class="mockup-title">jamshaid.portfolio.dev</span>
+            </div>
+            <div class="mockup-body">
+                <div class="mock-avatar"></div>
+                <div class="mock-name">Jamshaid Nawaz</div>
+                <div class="mock-title">ML Engineer & Developer</div>
+                <div class="mock-bars">
+                    <div class="mock-bar" style="width:90%"><span>Python</span></div>
+                    <div class="mock-bar" style="width:75%"><span>Flask</span></div>
+                    <div class="mock-bar" style="width:85%"><span>Machine Learning</span></div>
+                </div>
+                <div class="mock-btns">
+                    <div class="mock-btn primary">Hire Me</div>
+                    <div class="mock-btn ghost">Download CV</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section class="features" id="features">
+    <div class="container">
+        <div class="section-label">What You Get</div>
+        <h2 class="section-title">Two Powerful Tools.<br>One Platform.</h2>
+
+        <div class="features-grid">
+            <div class="feature-card card-cv">
+                <div class="feature-icon">📄</div>
+                <h3>CV Generator</h3>
+                <p>Generate a beautifully formatted PDF resume. Add sections step-by-step — only filled sections appear in your CV.</p>
+                <ul class="feature-list">
+                    <li>Professional PDF output</li>
+                    <li>Dynamic sections (auto-hidden if empty)</li>
+                    <li>Education, Skills, Projects, Certifications</li>
+                    <li>Instant download</li>
+                </ul>
+                <a href="{{ url_for('register') }}" class="feature-cta">Make My CV →</a>
+            </div>
+            <div class="feature-card card-portfolio">
+                <div class="feature-icon">🌐</div>
+                <h3>Portfolio Website</h3>
+                <p>Get a live, animated portfolio website instantly. Dark/Light mode, smooth animations, and fully responsive.</p>
+                <ul class="feature-list">
+                    <li>Live responsive website</li>
+                    <li>Glassmorphism design</li>
+                    <li>Dark & Light mode</li>
+                    <li>Shareable public URL</li>
+                </ul>
+                <a href="{{ url_for('register') }}" class="feature-cta">Build Portfolio →</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section class="how-it-works">
+    <div class="container">
+        <div class="section-label">Process</div>
+        <h2 class="section-title">Up and Running in 4 Steps</h2>
+        <div class="steps-grid">
+            <div class="step">
+                <div class="step-num">01</div>
+                <h4>Register</h4>
+                <p>Create your free account in seconds</p>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step">
+                <div class="step-num">02</div>
+                <h4>Fill Profile</h4>
+                <p>Add your info, skills, projects</p>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step">
+                <div class="step-num">03</div>
+                <h4>Choose Output</h4>
+                <p>CV PDF or Portfolio Website</p>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step">
+                <div class="step-num">04</div>
+                <h4>Download / Share</h4>
+                <p>Download your CV or share your live site</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-card">
+            <div class="cta-orb"></div>
+            <h2>Ready to Build Your Identity?</h2>
+            <p>Join professionals who use APNI PEHCHAN to stand out.</p>
+            <a href="{{ url_for('register') }}" class="btn-primary large">
+                Create Free Account →
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
