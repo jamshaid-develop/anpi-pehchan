@@ -418,6 +418,22 @@ def build_cv_pdf(user):
         story.append(Paragraph("  .  ".join([f"{l.name} ({l.level})" for l in user.languages]),BODY))
     doc.build(story); buf.seek(0); return buf
 
+
+
+@app.route("/debug-upload", methods=["GET","POST"])
+def debug_upload():
+    if request.method == "POST":
+        f = request.files.get("testfile")
+        if f:
+            return f"File received: {f.filename}, size: {len(f.read())} bytes"
+        return "No file received"
+    return '''
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="testfile">
+        <button type="submit">Upload</button>
+    </form>
+    '''
+
 # ── STEP 9: INIT DB AND RUN ──
 with app.app_context():
     db.create_all()
