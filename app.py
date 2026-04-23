@@ -171,13 +171,16 @@ def logout(): session.clear(); return redirect(url_for("index"))
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    u=User.query.get(session["user_id"])
+    u = db.session.get(User, session["user_id"])
+    if not u:
+        session.clear()
+        return redirect(url_for("login"))
     return render_template("dashboard/dashboard.html",user=u,profile=u.profile)
 
 @app.route("/profile", methods=["GET","POST"])
 @login_required
 def profile():
-    u=User.query.get(session["user_id"])
+    u=db.session.get(User, session["user_id"])
     p=u.profile or Profile(user_id=u.id)
     if request.method=="POST":
         p.title=request.form.get("title",""); p.summary=request.form.get("summary","")
@@ -202,7 +205,7 @@ def profile():
 @app.route("/skills", methods=["GET","POST"])
 @login_required
 def skills():
-    u=User.query.get(session["user_id"])
+    u=db.session.get(User, session["user_id"])
     if request.method=="POST":
         Skill.query.filter_by(user_id=u.id).delete()
         for n,l in zip(request.form.getlist("skill_name"),request.form.getlist("skill_level")):
@@ -213,7 +216,7 @@ def skills():
 @app.route("/education", methods=["GET","POST"])
 @login_required
 def education():
-    u=User.query.get(session["user_id"])
+    u=db.session.get(User, session["user_id"])
     if request.method=="POST":
         Education.query.filter_by(user_id=u.id).delete()
         ins=request.form.getlist("institute"); dg=request.form.getlist("degree")
@@ -229,7 +232,7 @@ def education():
 @app.route("/experience", methods=["GET","POST"])
 @login_required
 def experience():
-    u=User.query.get(session["user_id"])
+    u=db.session.get(User, session["user_id"])
     if request.method=="POST":
         Experience.query.filter_by(user_id=u.id).delete()
         ro=request.form.getlist("role"); de=request.form.getlist("description")
@@ -245,7 +248,7 @@ def experience():
 @app.route("/projects", methods=["GET","POST"])
 @login_required
 def projects():
-    u=User.query.get(session["user_id"])
+    u=db.session.get(User, session["user_id"])
     if request.method=="POST":
         Project.query.filter_by(user_id=u.id).delete()
         nm=request.form.getlist("name"); de=request.form.getlist("description")
@@ -265,7 +268,7 @@ def projects():
 @app.route("/certificates", methods=["GET","POST"])
 @login_required
 def certificates():
-    u=User.query.get(session["user_id"])
+    u=db.session.get(User, session["user_id"])
     if request.method=="POST":
         Certificate.query.filter_by(user_id=u.id).delete()
         nm=request.form.getlist("name"); lk=request.form.getlist("link")
@@ -281,7 +284,7 @@ def certificates():
 @app.route("/languages", methods=["GET","POST"])
 @login_required
 def languages():
-    u=User.query.get(session["user_id"])
+    u=db.session.get(User, session["user_id"])
     if request.method=="POST":
         Language.query.filter_by(user_id=u.id).delete()
         for n,l in zip(request.form.getlist("name"),request.form.getlist("level")):
@@ -293,13 +296,13 @@ def languages():
 @app.route("/cv/preview")
 @login_required
 def cv_preview():
-    u=User.query.get(session["user_id"])
+    u=db.session.get(User, session["user_id"])
     return render_template("cv/preview.html",user=u,profile=u.profile)
 
 @app.route("/cv/download")
 @login_required
 def cv_download():
-    u=User.query.get(session["user_id"])
+    u=db.session.get(User, session["user_id"])
     buf=build_cv_pdf(u)
     return send_file(buf,as_attachment=True,
         download_name=u.name.replace(" ","_")+"_CV.pdf",mimetype="application/pdf")
@@ -308,7 +311,7 @@ def cv_download():
 @app.route("/portfolio")
 @login_required
 def portfolio():
-    u=User.query.get(session["user_id"]); p=u.profile; svcs=[]
+    u=db.session.get(User, session["user_id"]); p=u.profile; svcs=[]
     if p and p.services:
         try: svcs=json.loads(p.services)
         except: pass
