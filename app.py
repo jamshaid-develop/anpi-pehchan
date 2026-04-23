@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from functools import wraps
-import os, json, io
+import os, json, io, base64
 from datetime import datetime
 
 # ── STEP 1: APP CONFIG ──
@@ -105,7 +105,7 @@ class Language(db.Model):
 # ── STEP 3: HELPERS ──
 ALLOWED = {"png","jpg","jpeg","gif","webp","pdf"}
 def allowed_file(f): return "." in f and f.rsplit(".",1)[1].lower() in ALLOWED
-import base64
+
 
 def save_upload(file, subfolder):
     if file and file.filename and allowed_file(file.filename):
