@@ -53,7 +53,12 @@ class Profile(db.Model):
     instagram = db.Column(db.String(200)); telegram = db.Column(db.String(200))
     twitter = db.Column(db.String(200)); avatar = db.Column(db.String(300))
     services = db.Column(db.Text)
-
+    # ── NEW FIELDS ──
+    dob = db.Column(db.String(50))
+    cnic = db.Column(db.String(20))
+    gender = db.Column(db.String(20))
+    address = db.Column(db.Text)
+    region = db.Column(db.String(100))
 class Project(db.Model):
     __tablename__ = "projects"
     id = db.Column(db.Integer, primary_key=True)
@@ -100,14 +105,15 @@ class Language(db.Model):
 # ── STEP 3: HELPERS ──
 ALLOWED = {"png","jpg","jpeg","gif","webp","pdf"}
 def allowed_file(f): return "." in f and f.rsplit(".",1)[1].lower() in ALLOWED
-def save_upload(file, sub):
+import base64
+
+def save_upload(file, subfolder):
     if file and file.filename and allowed_file(file.filename):
-        fname = secure_filename(file.filename)
-        folder = os.path.join("static","uploads",sub)
-        os.makedirs(folder, exist_ok=True)
-        path = os.path.join(folder, fname)
-        file.save(path)
-        return "/" + path.replace("\\","/")
+        # Read file and convert to base64
+        file_data = file.read()
+        ext = file.filename.rsplit(".", 1)[1].lower()
+        b64 = base64.b64encode(file_data).decode("utf-8")
+        return f"data:image/{ext};base64,{b64}"
     return None
 def login_required(f):
     @wraps(f)
@@ -181,6 +187,11 @@ def profile():
         p.portfolio=request.form.get("portfolio",""); p.facebook=request.form.get("facebook","")
         p.instagram=request.form.get("instagram",""); p.telegram=request.form.get("telegram","")
         p.twitter=request.form.get("twitter","")
+        p.dob = request.form.get("dob", "") or p.dob
+        p.cnic = request.form.get("cnic", "") or p.cnic
+        p.gender = request.form.get("gender", "") or p.gender
+        p.address = request.form.get("address", "") or p.address
+        p.region = request.form.get("region", "") or p.region
         p.services=json.dumps(request.form.getlist("services"))
         s=save_upload(request.files.get("avatar"),"avatars")
         if s: p.avatar=s
@@ -348,6 +359,19 @@ def build_cv_pdf(user):
             p.city and f"L: {p.city}",p.github and f"G: {p.github}",
             p.linkedin and f"in: {p.linkedin}"] if x]
         if cs: story.append(Paragraph("  |  ".join(cs),CON)); story.append(Spacer(1,8))
+    # ── Personal Info in CV ──
+    if p:
+        personal = [x for x in [
+            p.dob and f"DOB: {p.dob}",
+            p.gender and f"Gender: {p.gender}",
+            p.cnic and f"CNIC: {p.cnic}",
+            p.region and f"Region: {p.region}",
+        ] if x]
+        if personal:
+            story.append(Paragraph("  |  ".join(personal), CON))
+        if p.address and p.address.strip():
+            story.append(Paragraph(f"Address: {p.address}", CON))
+        story.append(Spacer(1, 8))
     if p and p.summary and p.summary.strip():
         story.append(Paragraph("PROFESSIONAL SUMMARY",SH)); story.append(HR())
         story.append(Paragraph(p.summary,BODY))

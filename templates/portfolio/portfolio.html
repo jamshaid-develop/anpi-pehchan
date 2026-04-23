@@ -330,9 +330,26 @@
                 <p style="color:var(--text2);line-height:1.9;font-size:1rem;">
                     {{ profile.summary if profile and profile.summary else "I am a passionate developer dedicated to building real-world solutions." }}
                 </p>
-                {% if profile and profile.city %}
-                <p style="color:var(--text3);margin-top:16px;font-size:.9rem;">📍 {{ profile.city }}</p>
-                {% endif %}
+                <!-- City + Personal Info -->
+                    {% if profile %}
+                    <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;">
+                        {% if profile.city %}
+                        <span style="color:var(--text2);font-size:.9rem;">📍 {{ profile.city }}</span>
+                        {% endif %}
+                        {% if profile.dob %}
+                        <span style="color:var(--text2);font-size:.9rem;">🎂 {{ profile.dob }}</span>
+                        {% endif %}
+                        {% if profile.gender %}
+                        <span style="color:var(--text2);font-size:.9rem;">👤 {{ profile.gender }}</span>
+                        {% endif %}
+                        {% if profile.region %}
+                        <span style="color:var(--text2);font-size:.9rem;">☪ {{ profile.region }}</span>
+                        {% endif %}
+                        {% if profile.address %}
+                        <span style="color:var(--text2);font-size:.9rem;">🏠 {{ profile.address }}</span>
+                         {% endif %}
+                    </div>
+                    {% endif %}
             </div>
             <div class="about-stats reveal">
                 <div class="about-stat">

@@ -4,119 +4,201 @@
 <div class="edit-page">
     <div class="edit-header">
         <a href="{{ url_for('dashboard') }}" class="back-btn">← Dashboard</a>
-        <h1>👤 Profile & Contacts</h1>
+        <h1>👤 Profile &Info & Contacts</h1>
         <p>Fill in your information. Only filled fields will appear in your CV and Portfolio.</p>
     </div>
     <form method="POST" enctype="multipart/form-data" class="edit-form">
-        <div class="form-section">
-            <h3>Basic Info</h3>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Professional Title *</label>
-                    <input type="text" name="title" value="{{ profile.title or '' }}" placeholder="e.g. ML Engineer & Full Stack Developer">
-                </div>
-                <div class="form-group">
-                    <label>City</label>
-                    <input type="text" name="city" value="{{ profile.city or '' }}" placeholder="Lahore, Pakistan">
-                </div>
+
+    <!-- SECTION 1: Basic Info -->
+    <div class="form-section">
+        <h3>Basic Info</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Professional Title *</label>
+                <input type="text" name="title"
+                    value="{{ profile.title or '' }}"
+                    placeholder="e.g. ML Engineer & Full Stack Developer">
             </div>
             <div class="form-group">
-                <label>Professional Summary</label>
-                <textarea name="summary" rows="4" placeholder="Write 3-4 lines about yourself, your expertise, and your goals...">{{ profile.summary or '' }}</textarea>
+                <label>City</label>
+                <input type="text" name="city"
+                    value="{{ profile.city or '' }}"
+                    placeholder="Lahore, Pakistan">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Professional Summary / Bio</label>
+            <textarea name="summary" rows="4"
+                placeholder="Write 3-4 lines about yourself...">{{ profile.summary or '' }}</textarea>
+        </div>
+        <div class="form-group">
+            <label>Profile Photo</label>
+            <div class="upload-zone" id="avatarZone" style="cursor:pointer;">
+                {% if profile and profile.avatar %}
+                    <img src="{{ profile.avatar }}"
+                        style="max-height:160px;border-radius:50%;object-fit:cover;">
+                {% else %}
+                    <div class="upload-placeholder">
+                        <span>📷</span><p>Click to upload</p>
+                    </div>
+                {% endif %}
+                <input type="file" name="avatar" accept="image/*"
+                    id="avatarInput" hidden>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: Personal Information -->
+    <div class="form-section">
+        <h3>Personal Information</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Date of Birth</label>
+                <input type="text" name="dob"
+                    value="{{ profile.dob or '' }}"
+                    placeholder="e.g. 15 March 2002">
             </div>
             <div class="form-group">
-                <label>Profile Photo</label>
-                <div class="upload-zone" id="avatarZone">
-                    {% if profile and profile.avatar %}
-                        <img src="{{ profile.avatar }}" class="upload-preview" id="avatarPreview">
+                <label>CNIC Number</label>
+                <input type="text" name="cnic"
+                    value="{{ profile.cnic or '' }}"
+                    placeholder="35202-1234567-1">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Gender</label>
+                <select name="gender">
+                     <option value="">Select Gender</option>
+                     {% if profile and profile.gender == 'Male' %}
+                        <option value="Male" selected>Male</option>
+                        <option value="Female">Female</option>
+                     {% elif profile and profile.gender == 'Female' %}
+                         <option value="Male">Male</option>
+                          <option value="Female" selected>Female</option>
                     {% else %}
-                        <div class="upload-placeholder" id="uploadPlaceholder">
-                            <span>📷</span><p>Click or drag to upload</p>
-                        </div>
+                         <option value="Male">Male</option>
+                         <option value="Female">Female</option>
                     {% endif %}
-                    <input type="file" name="avatar" accept="image/*" id="avatarInput" hidden>
-                </div>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Region / Faith</label>
+                <input type="text" name="region"
+                    value="{{ profile.region or '' }}"
+                    placeholder="Muslim — Punjab, Pakistan">
             </div>
         </div>
+        <div class="form-group">
+            <label>Full Address</label>
+            <textarea name="address" rows="2"
+                placeholder="House No, Street, City, Province">{{ profile.address or '' }}</textarea>
+        </div>
+    </div>
 
-        <div class="form-section">
-            <h3>Contact Information</h3>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Email *</label>
-                    <input type="email" name="email" value="{{ profile.email or user.email }}" placeholder="your@email.com">
-                </div>
-                <div class="form-group">
-                    <label>Phone *</label>
-                    <input type="tel" name="phone" value="{{ profile.phone or '' }}" placeholder="+92 300 1234567">
-                </div>
+    <!-- SECTION 3: Contact Information -->
+    <div class="form-section">
+        <h3>Contact Information</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Email *</label>
+                <input type="email" name="email"
+                    value="{{ profile.email or user.email }}"
+                    placeholder="your@email.com">
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>WhatsApp *</label>
-                    <input type="tel" name="whatsapp" value="{{ profile.whatsapp or '' }}" placeholder="+92 300 1234567">
-                </div>
-                <div class="form-group">
-                    <label>GitHub</label>
-                    <input type="url" name="github" value="{{ profile.github or '' }}" placeholder="https://github.com/username">
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>LinkedIn</label>
-                    <input type="url" name="linkedin" value="{{ profile.linkedin or '' }}" placeholder="https://linkedin.com/in/username">
-                </div>
-                <div class="form-group">
-                    <label>Portfolio Website</label>
-                    <input type="url" name="portfolio" value="{{ profile.portfolio or '' }}" placeholder="https://yoursite.com">
-                </div>
+            <div class="form-group">
+                <label>Phone *</label>
+                <input type="tel" name="phone"
+                    value="{{ profile.phone or '' }}"
+                    placeholder="+92 300 1234567">
             </div>
         </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>WhatsApp *</label>
+                <input type="tel" name="whatsapp"
+                    value="{{ profile.whatsapp or '' }}"
+                    placeholder="+92 300 1234567">
+            </div>
+            <div class="form-group">
+                <label>GitHub</label>
+                <input type="url" name="github"
+                    value="{{ profile.github or '' }}"
+                    placeholder="https://github.com/username">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>LinkedIn</label>
+                <input type="url" name="linkedin"
+                    value="{{ profile.linkedin or '' }}"
+                    placeholder="https://linkedin.com/in/username">
+            </div>
+            <div class="form-group">
+                <label>Portfolio Website</label>
+                <input type="url" name="portfolio"
+                    value="{{ profile.portfolio or '' }}"
+                    placeholder="https://yoursite.com">
+            </div>
+        </div>
+    </div>
 
-        <div class="form-section">
-            <h3>Social Media <span class="optional-tag">Optional</span></h3>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Facebook</label>
-                    <input type="url" name="facebook" value="{{ profile.facebook or '' }}" placeholder="https://facebook.com/username">
-                </div>
-                <div class="form-group">
-                    <label>Instagram</label>
-                    <input type="url" name="instagram" value="{{ profile.instagram or '' }}" placeholder="https://instagram.com/username">
-                </div>
+    <!-- SECTION 4: Social Media -->
+    <div class="form-section">
+        <h3>Social Media <span class="optional-tag">Optional</span></h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Facebook</label>
+                <input type="url" name="facebook"
+                    value="{{ profile.facebook or '' }}"
+                    placeholder="https://facebook.com/username">
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Telegram</label>
-                    <input type="url" name="telegram" value="{{ profile.telegram or '' }}" placeholder="https://t.me/username">
-                </div>
-                <div class="form-group">
-                    <label>X (Twitter)</label>
-                    <input type="url" name="twitter" value="{{ profile.twitter or '' }}" placeholder="https://x.com/username">
-                </div>
+            <div class="form-group">
+                <label>Instagram</label>
+                <input type="url" name="instagram"
+                    value="{{ profile.instagram or '' }}"
+                    placeholder="https://instagram.com/username">
             </div>
         </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Telegram</label>
+                <input type="url" name="telegram"
+                    value="{{ profile.telegram or '' }}"
+                    placeholder="https://t.me/username">
+            </div>
+            <div class="form-group">
+                <label>X (Twitter)</label>
+                <input type="url" name="twitter"
+                    value="{{ profile.twitter or '' }}"
+                    placeholder="https://x.com/username">
+            </div>
+        </div>
+    </div>
 
-        <div class="form-section">
-            <h3>Services Offered <span class="optional-tag">Portfolio Only</span></h3>
-            <p class="form-hint">Check services you offer. Leave empty to hide this section.</p>
-            {% set current_services = profile.services|from_json if profile and profile.services else [] %}
-            <div class="checkbox-grid">
-                {% for service in ["Python Automation", "Machine Learning", "Web Development", "Database Design", "API Development", "Data Analysis", "UI/UX Design", "DevOps"] %}
-                <label class="checkbox-card">
-                    <input type="checkbox" name="services" value="{{ service }}"
-                        {% if service in current_services %}checked{% endif %}>
-                    <span>{{ service }}</span>
-                </label>
-                {% endfor %}
-            </div>
+    <!-- SECTION 5: Services -->
+    <div class="form-section">
+        <h3>Services Offered <span class="optional-tag">Portfolio Only</span></h3>
+        <p class="form-hint">Check services you offer.</p>
+        {% set current_services = profile.services|from_json if profile and profile.services else [] %}
+        <div class="checkbox-grid">
+            {% for service in ["Python Automation","Machine Learning","Web Development",
+                "Database Design","API Development","Data Analysis","UI/UX Design","DevOps"] %}
+            <label class="checkbox-card">
+                <input type="checkbox" name="services" value="{{ service }}"
+                    {% if service in current_services %}checked{% endif %}>
+                <span>{{ service }}</span>
+            </label>
+            {% endfor %}
         </div>
+    </div>
 
-        <div class="form-actions">
-            <button type="submit" class="btn-primary">Save Profile →</button>
-            <a href="{{ url_for('dashboard') }}" class="btn-ghost">Cancel</a>
-        </div>
-    </form>
+    <div class="form-actions">
+        <button type="submit" class="btn-primary">Save Profile →</button>
+        <a href="{{ url_for('dashboard') }}" class="btn-ghost">Cancel</a>
+    </div>
+
+</form>
 </div>
 
 {% endblock %}
