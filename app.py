@@ -107,13 +107,14 @@ ALLOWED = {"png","jpg","jpeg","gif","webp","pdf"}
 def allowed_file(f): return "." in f and f.rsplit(".",1)[1].lower() in ALLOWED
 
 
-def save_upload(file, subfolder):
+def save_upload(file, sub):
     if file and file.filename and allowed_file(file.filename):
-        # Read file and convert to base64
-        file_data = file.read()
-        ext = file.filename.rsplit(".", 1)[1].lower()
-        b64 = base64.b64encode(file_data).decode("utf-8")
-        return f"data:image/{ext};base64,{b64}"
+        fname = secure_filename(file.filename)
+        folder = os.path.join("static", "uploads", sub)
+        os.makedirs(folder, exist_ok=True)
+        path = os.path.join(folder, fname)
+        file.save(path)
+        return "/" + path.replace("\\", "/")
     return None
 def login_required(f):
     @wraps(f)
