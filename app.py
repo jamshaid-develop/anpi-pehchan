@@ -51,7 +51,7 @@ class Profile(db.Model):
     github = db.Column(db.String(200)); linkedin = db.Column(db.String(200))
     portfolio = db.Column(db.String(200)); facebook = db.Column(db.String(200))
     instagram = db.Column(db.String(200)); telegram = db.Column(db.String(200))
-    twitter = db.Column(db.String(200)); avatar = db.Column(db.String(db.Text))
+    twitter = db.Column(db.String(200)); avatar = db.Column(db.Text)
     services = db.Column(db.Text)
     # ── NEW FIELDS ──
     dob = db.Column(db.String(50))
@@ -65,7 +65,7 @@ class Project(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     name = db.Column(db.String(200)); description = db.Column(db.Text)
     tech_stack = db.Column(db.String(300)); live_link = db.Column(db.String(300))
-    github_link = db.Column(db.String(300)); image = db.Column(db.String(db.Text))
+    github_link = db.Column(db.String(300)); image = db.Column(db.Text)
     challenges = db.Column(db.Text); order = db.Column(db.Integer, default=0)
 
 class Education(db.Model):
@@ -88,7 +88,7 @@ class Certificate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     name = db.Column(db.String(200)); link = db.Column(db.String(300))
-    file = db.Column(db.String(db.Text)); order = db.Column(db.Integer, default=0)
+    file = db.Column(db.Text); order = db.Column(db.Integer, default=0)
 
 class Skill(db.Model):
     __tablename__ = "skills"
