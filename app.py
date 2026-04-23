@@ -108,13 +108,16 @@ def allowed_file(f): return "." in f and f.rsplit(".",1)[1].lower() in ALLOWED
 
 
 def save_upload(file, sub):
+    print(f"save_upload called: file={file}, filename={file.filename if file else 'None'}")
     if file and file.filename and allowed_file(file.filename):
         fname = secure_filename(file.filename)
         folder = os.path.join("static", "uploads", sub)
         os.makedirs(folder, exist_ok=True)
         path = os.path.join(folder, fname)
         file.save(path)
+        print(f"File saved to: {path}")
         return "/" + path.replace("\\", "/")
+    print("save_upload returning None")
     return None
 def login_required(f):
     @wraps(f)
