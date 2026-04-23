@@ -196,8 +196,11 @@ def profile():
         p.address = request.form.get("address", "") or p.address
         p.region = request.form.get("region", "") or p.region
         p.services=json.dumps(request.form.getlist("services"))
-        s=save_upload(request.files.get("avatar"),"avatars")
-        if s: p.avatar=s
+        s = save_upload(request.files.get("avatar"), "avatars")
+        if s:
+            p.avatar = s
+            db.session.commit()
+            print("Avatar saved:", len(s), "chars")
         if not p.id: db.session.add(p)
         db.session.commit(); return redirect(url_for("profile"))
     return render_template("dashboard/profile.html",user=u,profile=p)
