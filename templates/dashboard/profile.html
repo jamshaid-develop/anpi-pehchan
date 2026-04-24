@@ -31,17 +31,16 @@
             <textarea name="summary" rows="4"
                 placeholder="Write 3-4 lines about yourself...">{{ profile.summary or '' }}</textarea>
         </div>
-       <div class="form-group">
-             <label>Profile Photo</label>
-             {% if profile and profile.avatar %}
-             <img src="{{ profile.avatar }}" id="avatarPreview"
-                style="width:120px;height:120px;border-radius:50%;object-fit:cover;display:block;margin-bottom:10px;">
-            {% else %}
-             <img id="avatarEmpty" src=""
-             style="display:none;width:120px;height:120px;border-radius:50%;object-fit:cover;margin-bottom:10px;">
-            {% endif %}
-            <input type="file" name="avatar" accept="image/*" id="avatarInput" class="file-input">
-       </div>
+      <div class="form-group">
+         <label>Profile Photo</label>
+          {% if profile and profile.avatar %}
+            <div style="margin-bottom:10px;">
+               <img src="{{ profile.avatar }}"
+             style="width:100px;height:100px;border-radius:50%;object-fit:cover;">
+            </div>
+          {% endif %}
+          <input type="file" name="avatar" accept="image/jpeg,image/png,image/jpg"></div>
+      </div>
 
     <!-- SECTION 2: Personal Information -->
     <div class="form-section">
@@ -193,31 +192,10 @@
         <a href="{{ url_for('dashboard') }}" class="btn-ghost">Cancel</a>
     </div>
 
-   </form>
+</form>
 </div>
 
 {% endblock %}
 {% block extra_js %}
-<script>
-// Simple avatar preview without replacing input
-document.getElementById('avatarZone').addEventListener('click', () => {
-    document.getElementById('avatarInput').click();
-});
 
-document.getElementById('avatarInput').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            const preview = document.getElementById('avatarPreview') ||
-                           document.getElementById('avatarEmpty');
-            if (preview) {
-                preview.src = ev.target.result;
-                preview.style.display = 'block';
-            }
-        };
-        reader.readAsDataURL(file);
-    }
-});
-</script>
 {% endblock %}
