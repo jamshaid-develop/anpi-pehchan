@@ -16,6 +16,8 @@ app.secret_key = os.environ.get("SECRET_KEY", "apni-pehchan-secret-2024")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///apni_pehchan.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
+UPLOAD_FOLDER = os.environ.get("UPLOAD_PATH", os.path.join("static", "uploads"))
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 db = SQLAlchemy(app)
 
 @app.template_filter("from_json")
