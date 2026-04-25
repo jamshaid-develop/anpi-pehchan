@@ -8,9 +8,55 @@
         <p>Review your CV before downloading. Update any section from the dashboard.</p>
     </div>
     <div class="cv-preview-actions">
-        <a href="{{ url_for('cv_download') }}" class="btn-primary">↓ Download PDF</a>
-        <a href="{{ url_for('profile') }}" class="btn-ghost">Edit Profile</a>
+    <button onclick="shareCV()" class="btn-primary">🔗 Share CV</button>
+    <a href="{{ url_for('profile') }}" class="btn-ghost">✏ Edit</a>
+    <a href="{{ url_for('cv_download') }}" class="btn-ghost">↓ Download</a>
+</div>
+
+<!-- Share CV Modal -->
+<div id="cvShareModal" style="
+    display:none; position:fixed; inset:0; z-index:999;
+    background:rgba(0,0,0,0.7); backdrop-filter:blur(8px);
+    align-items:center; justify-content:center;">
+    <div style="
+        background:#0d1420; border:1px solid rgba(79,142,247,.3);
+        border-radius:20px; padding:36px; max-width:480px; width:90%;
+        position:relative;">
+        <button onclick="document.getElementById('cvShareModal').style.display='none'"
+            style="position:absolute;top:16px;right:16px;background:none;
+            border:none;color:#8a9ab5;font-size:1.3rem;cursor:pointer;">✕</button>
+        <h3 style="font-family:'Syne',sans-serif;font-weight:800;
+            font-size:1.3rem;margin-bottom:8px;color:#e8edf5;">Share CV</h3>
+        <p style="color:#8a9ab5;font-size:.88rem;margin-bottom:20px;">
+            Share your portfolio link — CV is viewable there too
+        </p>
+        <div style="
+            background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);
+            border-radius:10px;padding:12px 16px;display:flex;
+            align-items:center;gap:10px;margin-bottom:16px;">
+            <span style="color:#7eb3ff;font-family:'JetBrains Mono',monospace;
+                font-size:.82rem;flex:1;word-break:break-all;" id="cvUrl">
+                {{ request.host_url }}portfolio/public/{{ user.id }}
+            </span>
+            <button onclick="copyCvUrl()" id="cvCopyBtn" style="
+                background:#4f8ef7;color:#fff;border:none;border-radius:8px;
+                padding:6px 14px;cursor:pointer;font-size:.82rem;
+                font-weight:600;white-space:nowrap;">Copy</button>
+        </div>
+        <div style="display:flex;gap:10px;">
+            <a id="cvWaBtn" href="#" target="_blank" style="
+                flex:1;text-align:center;padding:10px;
+                background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.3);
+                border-radius:10px;color:#25d366;text-decoration:none;
+                font-size:.85rem;font-weight:600;">💬 WhatsApp</a>
+            <a id="cvEmailBtn" href="#" style="
+                flex:1;text-align:center;padding:10px;
+                background:rgba(79,142,247,0.1);border:1px solid rgba(79,142,247,0.3);
+                border-radius:10px;color:#4f8ef7;text-decoration:none;
+                font-size:.85rem;font-weight:600;">✉ Email</a>
+        </div>
     </div>
+</div>
     <div class="cv-preview-card">
         <!-- HEADER -->
         <div class="cv-header">
@@ -105,4 +151,23 @@
         <a href="{{ url_for('cv_download') }}" class="btn-primary">↓ Download PDF CV</a>
     </div>
 </div>
+{% block extra_js %}
+<script>
+const cvPublicUrl = "{{ request.host_url }}portfolio/public/{{ user.id }}";
+function shareCV() {
+    document.getElementById('cvShareModal').style.display = 'flex';
+    document.getElementById('cvWaBtn').href =
+        "https://wa.me/?text=" + encodeURIComponent("View my CV & Portfolio: " + cvPublicUrl);
+    document.getElementById('cvEmailBtn').href =
+        "mailto:?subject=My CV&body=" + encodeURIComponent("View my CV & Portfolio: " + cvPublicUrl);
+}
+function copyCvUrl() {
+    navigator.clipboard.writeText(cvPublicUrl).then(() => {
+        const btn = document.getElementById('cvCopyBtn');
+        btn.textContent = 'Copied!';
+        btn.style.background = '#3dd68c';
+        setTimeout(() => { btn.textContent = 'Copy'; btn.style.background = '#4f8ef7'; }, 2000);
+    });
+}
+</script>
 {% endblock %}

@@ -363,70 +363,157 @@ def build_cv_pdf(user):
     CON=st("C",fontName="Helvetica",fontSize=9,textColor=GRAY,leading=14)
     HR=lambda: HRFlowable(width=W,thickness=0.5,color=colors.HexColor("#dddddd"),spaceAfter=4)
     story=[]
+
+    # ── Name & Title ──
     story.append(Paragraph(user.name,NAME))
     if p and p.title: story.append(Paragraph(p.title,JOB))
     story.append(HRFlowable(width=W,thickness=2,color=ACCENT,spaceAfter=6))
+
+    # ── Contact Row with clickable links ──
     if p:
-        cs=[x for x in [p.email and f"E: {p.email}",p.phone and f"T: {p.phone}",
-            p.city and f"L: {p.city}",p.github and f"G: {p.github}",
-            p.linkedin and f"in: {p.linkedin}"] if x]
-        if cs: story.append(Paragraph("  |  ".join(cs),CON)); story.append(Spacer(1,8))
-    # ── Personal Info in CV ──
-    if p:
-        personal = [x for x in [
-            p.dob and f"DOB: {p.dob}",
-            p.gender and f"Gender: {p.gender}",
-            p.cnic and f"CNIC: {p.cnic}",
-            p.region and f"Region: {p.region}",
-        ] if x]
-        if personal:
-            story.append(Paragraph("  |  ".join(personal), CON))
-        if p.address and p.address.strip():
-            story.append(Paragraph(f"Address: {p.address}", CON))
-        story.append(Spacer(1, 8))
+        cs = []
+        if p.email:    cs.append(f'<a href="mailto:{p.email}" color="#4a9eff">{p.email}</a>')
+        if p.phone:    cs.append(f'☎ {p.phone}')
+        if p.city:     cs.append(f'📍 {p.city}')
+        if p.github:   cs.append(f'<a href="{p.github}" color="#4a9eff">GitHub</a>')
+        if p.linkedin: cs.append(f'<a href="{p.linkedin}" color="#4a9eff">LinkedIn</a>')
+        if p.portfolio:cs.append(f'<a href="{p.portfolio}" color="#4a9eff">Portfolio</a>')
+        if cs:
+            story.append(Paragraph("   |   ".join(cs), CON))
+            story.append(Spacer(1,8))
+
+    # ── Summary ──
     if p and p.summary and p.summary.strip():
         story.append(Paragraph("PROFESSIONAL SUMMARY",SH)); story.append(HR())
         story.append(Paragraph(p.summary,BODY))
+
+    # ── Skills in 4-column grid ──
     if user.skills:
         story.append(Paragraph("SKILLS",SH)); story.append(HR())
-        story.append(Paragraph("  .  ".join([s.name for s in user.skills]),BODY))
+        skill_names=[s.name for s in user.skills]
+        rows=[]
+        for i in range(0,len(skill_names),4):
+            row=skill_names[i:i+4]
+            while len(row)<4: row.append("")
+            rows.append([Paragraph(f"• {n}" if n else "",BODY) for n in row])
+        if rows:
+            skill_table=Table(rows,colWidths=[W/4]*4)
+            skill_table.setStyle(TableStyle([
+                ("TOPPADDING",(0,0),(-1,-1),3),
+                ("BOTTOMPADDING",(0,0),(-1,-1),3),
+                ("LEFTPADDING",(0,0),(-1,-1),0),
+            ]))
+            story.append(skill_table)
+
+    # ── Experience ──
     if user.experiences:
         story.append(Paragraph("EXPERIENCE",SH)); story.append(HR())
         for e in sorted(user.experiences,key=lambda x:x.order):
-            row=Table([[Paragraph(e.role,B10),Paragraph(e.year or "",SMALL)]],colWidths=[W*.7,W*.3])
-            row.setStyle(TableStyle([("ALIGN",(1,0),(1,0),"RIGHT"),("TOPPADDING",(0,0),(-1,-1),0),("BOTTOMPADDING",(0,0),(-1,-1),0)]))
+            row=Table([[Paragraph(e.role,B10),Paragraph(e.year or "",SMALL)]],
+                colWidths=[W*.7,W*.3])
+            row.setStyle(TableStyle([
+                ("ALIGN",(1,0),(1,0),"RIGHT"),
+                ("TOPPADDING",(0,0),(-1,-1),0),
+                ("BOTTOMPADDING",(0,0),(-1,-1),0)
+            ]))
             story.append(row)
             if e.description: story.append(Paragraph(e.description,BODY))
             story.append(Spacer(1,4))
+
+    # ── Education ──
     if user.educations:
         story.append(Paragraph("EDUCATION",SH)); story.append(HR())
         for e in sorted(user.educations,key=lambda x:x.order):
-            row=Table([[Paragraph(e.degree or "",B10),Paragraph(e.batch or "",SMALL)]],colWidths=[W*.7,W*.3])
-            row.setStyle(TableStyle([("ALIGN",(1,0),(1,0),"RIGHT"),("TOPPADDING",(0,0),(-1,-1),0),("BOTTOMPADDING",(0,0),(-1,-1),0)]))
+            row=Table([[Paragraph(e.degree or "",B10),Paragraph(e.batch or "",SMALL)]],
+                colWidths=[W*.7,W*.3])
+            row.setStyle(TableStyle([
+                ("ALIGN",(1,0),(1,0),"RIGHT"),
+                ("TOPPADDING",(0,0),(-1,-1),0),
+                ("BOTTOMPADDING",(0,0),(-1,-1),0)
+            ]))
             story.append(row)
             ic=e.institute or ""
             if e.city: ic+=f", {e.city}"
-            story.append(Paragraph(ic,SMALL)); story.append(Spacer(1,4))
+            story.append(Paragraph(ic,SMALL))
+            story.append(Spacer(1,4))
+
+    # ── Projects — grid names then details ──
     if user.projects:
         story.append(Paragraph("PROJECTS",SH)); story.append(HR())
+        proj_names=[pr.name for pr in sorted(user.projects,key=lambda x:x.order)]
+        rows=[]
+        for i in range(0,len(proj_names),4):
+            row=proj_names[i:i+4]
+            while len(row)<4: row.append("")
+            rows.append([Paragraph(f"• {n}" if n else "",BODY) for n in row])
+        if rows:
+            proj_table=Table(rows,colWidths=[W/4]*4)
+            proj_table.setStyle(TableStyle([
+                ("TOPPADDING",(0,0),(-1,-1),3),
+                ("BOTTOMPADDING",(0,0),(-1,-1),3),
+                ("LEFTPADDING",(0,0),(-1,-1),0),
+            ]))
+            story.append(proj_table)
+        story.append(Spacer(1,6))
         for pr in sorted(user.projects,key=lambda x:x.order):
             story.append(Paragraph(pr.name,B10))
             if pr.description: story.append(Paragraph(pr.description,BODY))
-            lks=[x for x in [pr.live_link and f"Live: {pr.live_link}",pr.github_link and f"GitHub: {pr.github_link}"] if x]
-            if lks: story.append(Paragraph("  |  ".join(lks),SMALL))
+            lks=[]
+            if pr.live_link:   lks.append(f'<a href="{pr.live_link}" color="#4a9eff">Live Demo</a>')
+            if pr.github_link: lks.append(f'<a href="{pr.github_link}" color="#4a9eff">GitHub</a>')
+            if lks: story.append(Paragraph("   |   ".join(lks),SMALL))
             if pr.tech_stack: story.append(Paragraph(f"Tech: {pr.tech_stack}",SMALL))
             story.append(Spacer(1,4))
+
+    # ── Certificates — grid layout ──
     if user.certificates:
         story.append(Paragraph("CERTIFICATIONS",SH)); story.append(HR())
-        for c in sorted(user.certificates,key=lambda x:x.order):
-            line=c.name or ""
-            if c.link: line+=f"  -  {c.link}"
-            story.append(Paragraph(line,BODY))
+        cert_names=[c.name for c in sorted(user.certificates,key=lambda x:x.order)]
+        rows=[]
+        for i in range(0,len(cert_names),4):
+            row=cert_names[i:i+4]
+            while len(row)<4: row.append("")
+            rows.append([Paragraph(f"• {n}" if n else "",BODY) for n in row])
+        if rows:
+            cert_table=Table(rows,colWidths=[W/4]*4)
+            cert_table.setStyle(TableStyle([
+                ("TOPPADDING",(0,0),(-1,-1),3),
+                ("BOTTOMPADDING",(0,0),(-1,-1),3),
+                ("LEFTPADDING",(0,0),(-1,-1),0),
+            ]))
+            story.append(cert_table)
+
+    # ── Languages — grid layout ──
     if user.languages:
         story.append(Paragraph("LANGUAGES",SH)); story.append(HR())
-        story.append(Paragraph("  .  ".join([f"{l.name} ({l.level})" for l in user.languages]),BODY))
-    doc.build(story); buf.seek(0); return buf
+        lang_names=[f"{l.name} ({l.level})" for l in user.languages]
+        rows=[]
+        for i in range(0,len(lang_names),4):
+            row=lang_names[i:i+4]
+            while len(row)<4: row.append("")
+            rows.append([Paragraph(f"• {n}" if n else "",BODY) for n in row])
+        if rows:
+            lang_table=Table(rows,colWidths=[W/4]*4)
+            lang_table.setStyle(TableStyle([
+                ("TOPPADDING",(0,0),(-1,-1),3),
+                ("BOTTOMPADDING",(0,0),(-1,-1),3),
+                ("LEFTPADDING",(0,0),(-1,-1),0),
+            ]))
+            story.append(lang_table)
 
+    # ── Social Links ──
+    if p:
+        socials=[]
+        if p.whatsapp:  socials.append(f'<a href="https://wa.me/{p.whatsapp.replace("+","")}" color="#4a9eff">WhatsApp</a>')
+        if p.facebook:  socials.append(f'<a href="{p.facebook}" color="#4a9eff">Facebook</a>')
+        if p.instagram: socials.append(f'<a href="{p.instagram}" color="#4a9eff">Instagram</a>')
+        if p.telegram:  socials.append(f'<a href="{p.telegram}" color="#4a9eff">Telegram</a>')
+        if p.twitter:   socials.append(f'<a href="{p.twitter}" color="#4a9eff">Twitter</a>')
+        if socials:
+            story.append(Paragraph("SOCIAL",SH)); story.append(HR())
+            story.append(Paragraph("   |   ".join(socials),CON))
+
+    doc.build(story); buf.seek(0); return buf
 
 
 @app.route("/debug-upload", methods=["GET","POST"])
