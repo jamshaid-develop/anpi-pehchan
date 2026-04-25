@@ -381,6 +381,20 @@ def build_cv_pdf(user):
         if cs:
             story.append(Paragraph("   |   ".join(cs), CON))
             story.append(Spacer(1,8))
+        # ── Personal Info ──
+        if p:
+            personal = []
+            if p.dob:     personal.append(f"DOB: {p.dob}")
+            if p.gender:  personal.append(f"Gender: {p.gender}")
+            if p.cnic:    personal.append(f"CNIC: {p.cnic}")
+            if p.region:  personal.append(f"Region: {p.region}")
+            if personal:
+                story.append(Paragraph("   |   ".join(personal), CON))
+            if p.address and p.address.strip():
+                story.append(Paragraph(f"Address: {p.address}", CON))
+            if personal or (p.address and p.address.strip()):
+                story.append(Spacer(1, 8))
+
 
     # ── Summary ──
     if p and p.summary and p.summary.strip():
@@ -533,8 +547,22 @@ def debug_upload():
 # ── STEP 9: INIT DB AND RUN ──
 with app.app_context():
     db.create_all()
+    # ── Add new columns if they don't exist (safe migration) ──
+    from sqlalchemy import text
+    with db.engine.connect() as conn:
+        for col, typ in [
+            ("dob",     "VARCHAR(50)"),
+            ("cnic",    "VARCHAR(20)"),
+            ("gender",  "VARCHAR(20)"),
+            ("region",  "VARCHAR(100)"),
+            ("address", "TEXT"),
+        ]:
+            try:
+                conn.execute(text(f"ALTER TABLE profiles ADD COLUMN {col} {typ}"))
+                conn.commit()
+            except Exception:
+                pass  # Column already exists — skip
     for f in ["avatars","projects","certificates"]:
         os.makedirs(os.path.join("static","uploads",f),exist_ok=True)
-
 if __name__ == "__main__":
     app.run(debug=True,port=5000)
