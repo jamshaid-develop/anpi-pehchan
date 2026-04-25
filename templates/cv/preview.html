@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}CV Preview — APNI PEHCHAN{% endblock %}
+
 {% block content %}
 <div class="edit-page">
     <div class="edit-header">
@@ -7,73 +8,94 @@
         <h1>📄 CV Preview</h1>
         <p>Review your CV before downloading. Update any section from the dashboard.</p>
     </div>
-    <div class="cv-preview-actions">
-    <button onclick="shareCV()" class="btn-primary">🔗 Share CV</button>
-    <a href="{{ url_for('profile') }}" class="btn-ghost">✏ Edit</a>
-    <a href="{{ url_for('cv_download') }}" class="btn-ghost">↓ Download</a>
-</div>
 
-<!-- Share CV Modal -->
-<div id="cvShareModal" style="
-    display:none; position:fixed; inset:0; z-index:999;
-    background:rgba(0,0,0,0.7); backdrop-filter:blur(8px);
-    align-items:center; justify-content:center;">
-    <div style="
-        background:#0d1420; border:1px solid rgba(79,142,247,.3);
-        border-radius:20px; padding:36px; max-width:480px; width:90%;
-        position:relative;">
-        <button onclick="document.getElementById('cvShareModal').style.display='none'"
-            style="position:absolute;top:16px;right:16px;background:none;
-            border:none;color:#8a9ab5;font-size:1.3rem;cursor:pointer;">✕</button>
-        <h3 style="font-family:'Syne',sans-serif;font-weight:800;
-            font-size:1.3rem;margin-bottom:8px;color:#e8edf5;">Share CV</h3>
-        <p style="color:#8a9ab5;font-size:.88rem;margin-bottom:20px;">
-            Share your portfolio link — CV is viewable there too
-        </p>
+    <div class="cv-preview-actions">
+        <button onclick="shareCV()" class="btn-primary">🔗 Share CV</button>
+        <a href="{{ url_for('profile') }}" class="btn-ghost">✏ Edit</a>
+        <a href="{{ url_for('cv_download') }}" class="btn-ghost">↓ Download</a>
+    </div>
+
+    <!-- Share CV Modal -->
+    <div id="cvShareModal" style="
+        display:none; position:fixed; inset:0; z-index:999;
+        background:rgba(0,0,0,0.7); backdrop-filter:blur(8px);
+        align-items:center; justify-content:center;">
         <div style="
-            background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);
-            border-radius:10px;padding:12px 16px;display:flex;
-            align-items:center;gap:10px;margin-bottom:16px;">
-            <span style="color:#7eb3ff;font-family:'JetBrains Mono',monospace;
-                font-size:.82rem;flex:1;word-break:break-all;" id="cvUrl">
-                {{ request.host_url }}portfolio/public/{{ user.id }}
-            </span>
-            <button onclick="copyCvUrl()" id="cvCopyBtn" style="
-                background:#4f8ef7;color:#fff;border:none;border-radius:8px;
-                padding:6px 14px;cursor:pointer;font-size:.82rem;
-                font-weight:600;white-space:nowrap;">Copy</button>
-        </div>
-        <div style="display:flex;gap:10px;">
-            <a id="cvWaBtn" href="#" target="_blank" style="
-                flex:1;text-align:center;padding:10px;
-                background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.3);
-                border-radius:10px;color:#25d366;text-decoration:none;
-                font-size:.85rem;font-weight:600;">💬 WhatsApp</a>
-            <a id="cvEmailBtn" href="#" style="
-                flex:1;text-align:center;padding:10px;
-                background:rgba(79,142,247,0.1);border:1px solid rgba(79,142,247,0.3);
-                border-radius:10px;color:#4f8ef7;text-decoration:none;
-                font-size:.85rem;font-weight:600;">✉ Email</a>
+            background:#0d1420; border:1px solid rgba(79,142,247,.3);
+            border-radius:20px; padding:36px; max-width:480px; width:90%;
+            position:relative;">
+            <button onclick="document.getElementById('cvShareModal').style.display='none'"
+                style="position:absolute;top:16px;right:16px;background:none;
+                border:none;color:#8a9ab5;font-size:1.3rem;cursor:pointer;">✕</button>
+            <h3 style="font-family:'Syne',sans-serif;font-weight:800;
+                font-size:1.3rem;margin-bottom:8px;color:#e8edf5;">Share CV</h3>
+            <p style="color:#8a9ab5;font-size:.88rem;margin-bottom:20px;">
+                Share your portfolio link — CV is viewable there too
+            </p>
+            <div style="
+                background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);
+                border-radius:10px;padding:12px 16px;display:flex;
+                align-items:center;gap:10px;margin-bottom:16px;">
+                <span style="color:#7eb3ff;font-family:'JetBrains Mono',monospace;
+                    font-size:.82rem;flex:1;word-break:break-all;" id="cvUrl">
+                    {{ request.host_url }}portfolio/public/{{ user.id }}
+                </span>
+                <button onclick="copyCvUrl()" id="cvCopyBtn" style="
+                    background:#4f8ef7;color:#fff;border:none;border-radius:8px;
+                    padding:6px 14px;cursor:pointer;font-size:.82rem;
+                    font-weight:600;white-space:nowrap;">Copy</button>
+            </div>
+            <div style="display:flex;gap:10px;">
+                <a id="cvWaBtn" href="#" target="_blank" style="
+                    flex:1;text-align:center;padding:10px;
+                    background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.3);
+                    border-radius:10px;color:#25d366;text-decoration:none;
+                    font-size:.85rem;font-weight:600;">💬 WhatsApp</a>
+                <a id="cvEmailBtn" href="#" style="
+                    flex:1;text-align:center;padding:10px;
+                    background:rgba(79,142,247,0.1);border:1px solid rgba(79,142,247,0.3);
+                    border-radius:10px;color:#4f8ef7;text-decoration:none;
+                    font-size:.85rem;font-weight:600;">✉ Email</a>
+            </div>
         </div>
     </div>
-</div>
+
+    <!-- CV Preview Card -->
     <div class="cv-preview-card">
+
         <!-- HEADER -->
         <div class="cv-header">
             <h1 class="cv-name">{{ user.name }}</h1>
-            {% if profile and profile.title %}<p class="cv-title">{{ profile.title }}</p>{% endif %}
+            {% if profile and profile.title %}
+            <p class="cv-title">{{ profile.title }}</p>
+            {% endif %}
             <div class="cv-contacts">
                 {% if profile %}
                     {% if profile.email %}<span>✉ {{ profile.email }}</span>{% endif %}
                     {% if profile.phone %}<span>☎ {{ profile.phone }}</span>{% endif %}
                     {% if profile.city %}<span>📍 {{ profile.city }}</span>{% endif %}
-                    {% if profile.github %}<span>⌥ {{ profile.github }}</span>{% endif %}
-                    {% if profile.linkedin %}<span>in {{ profile.linkedin }}</span>{% endif %}
+                    {% if profile.github %}<span>{{ profile.github }}</span>{% endif %}
+                    {% if profile.linkedin %}<span>{{ profile.linkedin }}</span>{% endif %}
                 {% endif %}
             </div>
+            {% if profile %}
+            <div class="cv-contacts" style="margin-top:6px;">
+                {% if profile.dob %}<span>DOB: {{ profile.dob }}</span>{% endif %}
+                {% if profile.gender %}<span>{{ profile.gender }}</span>{% endif %}
+                {% if profile.cnic %}<span>CNIC: {{ profile.cnic }}</span>{% endif %}
+                {% if profile.region %}<span>{{ profile.region }}</span>{% endif %}
+            </div>
+            {% if profile.address %}
+            <div style="font-size:.82rem;color:#888;margin-top:4px;">
+                📍 {{ profile.address }}
+            </div>
+            {% endif %}
+            {% endif %}
         </div>
+
         <div class="cv-divider"></div>
 
+        <!-- SUMMARY -->
         {% if profile and profile.summary %}
         <div class="cv-section">
             <div class="cv-sec-title">PROFESSIONAL SUMMARY</div>
@@ -81,13 +103,19 @@
         </div>
         {% endif %}
 
+        <!-- SKILLS -->
         {% if user.skills %}
         <div class="cv-section">
             <div class="cv-sec-title">SKILLS</div>
-            <p class="cv-body">{{ user.skills|map(attribute='name')|join(' · ') }}</p>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;">
+                {% for skill in user.skills %}
+                <span class="cv-body">• {{ skill.name }}</span>
+                {% endfor %}
+            </div>
         </div>
         {% endif %}
 
+        <!-- EXPERIENCE -->
         {% if user.experiences %}
         <div class="cv-section">
             <div class="cv-sec-title">EXPERIENCE</div>
@@ -97,12 +125,15 @@
                     <strong>{{ exp.role }}</strong>
                     <span class="cv-year">{{ exp.year or '' }}</span>
                 </div>
-                {% if exp.description %}<p class="cv-body">{{ exp.description }}</p>{% endif %}
+                {% if exp.description %}
+                <p class="cv-body">{{ exp.description }}</p>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
         {% endif %}
 
+        <!-- EDUCATION -->
         {% if user.educations %}
         <div class="cv-section">
             <div class="cv-sec-title">EDUCATION</div>
@@ -112,48 +143,85 @@
                     <strong>{{ edu.degree }}</strong>
                     <span class="cv-year">{{ edu.batch or '' }}</span>
                 </div>
-                <p class="cv-small">{{ edu.institute }}{% if edu.city %}, {{ edu.city }}{% endif %}</p>
+                <p class="cv-small">
+                    {{ edu.institute }}{% if edu.city %}, {{ edu.city }}{% endif %}
+                </p>
             </div>
             {% endfor %}
         </div>
         {% endif %}
 
+        <!-- PROJECTS -->
         {% if user.projects %}
         <div class="cv-section">
             <div class="cv-sec-title">PROJECTS</div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:12px;">
+                {% for proj in user.projects|sort(attribute='order') %}
+                <span class="cv-body">• {{ proj.name }}</span>
+                {% endfor %}
+            </div>
             {% for proj in user.projects|sort(attribute='order') %}
             <div class="cv-entry">
                 <strong>{{ proj.name }}</strong>
-                {% if proj.description %}<p class="cv-body">{{ proj.description }}</p>{% endif %}
-                {% if proj.tech_stack %}<p class="cv-small">Tech: {{ proj.tech_stack }}</p>{% endif %}
+                {% if proj.description %}
+                <p class="cv-body">{{ proj.description }}</p>
+                {% endif %}
+                {% if proj.tech_stack %}
+                <p class="cv-small">Tech: {{ proj.tech_stack }}</p>
+                {% endif %}
+                {% if proj.live_link or proj.github_link %}
+                <p class="cv-small">
+                    {% if proj.live_link %}
+                    <a href="{{ proj.live_link }}" style="color:#4a9eff;">Live Demo</a>
+                    {% endif %}
+                    {% if proj.github_link %}
+                    &nbsp;|&nbsp;
+                    <a href="{{ proj.github_link }}" style="color:#4a9eff;">GitHub</a>
+                    {% endif %}
+                </p>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
         {% endif %}
 
+        <!-- CERTIFICATES -->
         {% if user.certificates %}
         <div class="cv-section">
             <div class="cv-sec-title">CERTIFICATIONS</div>
-            {% for cert in user.certificates|sort(attribute='order') %}
-            <p class="cv-body">• {{ cert.name }}{% if cert.link %} — {{ cert.link }}{% endif %}</p>
-            {% endfor %}
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;">
+                {% for cert in user.certificates|sort(attribute='order') %}
+                <span class="cv-body">• {{ cert.name }}</span>
+                {% endfor %}
+            </div>
         </div>
         {% endif %}
 
+        <!-- LANGUAGES -->
         {% if user.languages %}
         <div class="cv-section">
             <div class="cv-sec-title">LANGUAGES</div>
-            <p class="cv-body">{{ user.languages|map(attribute='name')|list|join(' · ') }}</p>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;">
+                {% for lang in user.languages %}
+                <span class="cv-body">• {{ lang.name }} ({{ lang.level }})</span>
+                {% endfor %}
+            </div>
         </div>
         {% endif %}
+
     </div>
+
     <div class="cv-preview-actions" style="margin-top:24px;">
         <a href="{{ url_for('cv_download') }}" class="btn-primary">↓ Download PDF CV</a>
     </div>
+
 </div>
+{% endblock %}
+
 {% block extra_js %}
 <script>
 const cvPublicUrl = "{{ request.host_url }}portfolio/public/{{ user.id }}";
+
 function shareCV() {
     document.getElementById('cvShareModal').style.display = 'flex';
     document.getElementById('cvWaBtn').href =
@@ -161,12 +229,16 @@ function shareCV() {
     document.getElementById('cvEmailBtn').href =
         "mailto:?subject=My CV&body=" + encodeURIComponent("View my CV & Portfolio: " + cvPublicUrl);
 }
+
 function copyCvUrl() {
     navigator.clipboard.writeText(cvPublicUrl).then(() => {
         const btn = document.getElementById('cvCopyBtn');
         btn.textContent = 'Copied!';
         btn.style.background = '#3dd68c';
-        setTimeout(() => { btn.textContent = 'Copy'; btn.style.background = '#4f8ef7'; }, 2000);
+        setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.style.background = '#4f8ef7';
+        }, 2000);
     });
 }
 </script>
