@@ -55,12 +55,7 @@ class Profile(db.Model):
     instagram = db.Column(db.String(200)); telegram = db.Column(db.String(200))
     twitter = db.Column(db.String(200)); avatar = db.Column(db.Text)
     services = db.Column(db.Text)
-    # ── NEW FIELDS ──
-    dob = db.Column(db.String(50))
-    cnic = db.Column(db.String(20))
-    gender = db.Column(db.String(20))
-    address = db.Column(db.Text)
-    region = db.Column(db.String(100))
+
 class Project(db.Model):
     __tablename__ = "projects"
     id = db.Column(db.Integer, primary_key=True)
@@ -196,11 +191,6 @@ def profile():
         p.portfolio=request.form.get("portfolio",""); p.facebook=request.form.get("facebook","")
         p.instagram=request.form.get("instagram",""); p.telegram=request.form.get("telegram","")
         p.twitter=request.form.get("twitter","")
-        p.dob = request.form.get("dob", "") or p.dob
-        p.cnic = request.form.get("cnic", "") or p.cnic
-        p.gender = request.form.get("gender", "") or p.gender
-        p.address = request.form.get("address", "") or p.address
-        p.region = request.form.get("region", "") or p.region
         p.services=json.dumps(request.form.getlist("services"))
         s = save_upload(request.files.get("avatar"), "avatars")
         if s:
@@ -340,195 +330,195 @@ def public_portfolio(uid):
         experiences=u.experiences,certificates=u.certificates,
         languages=u.languages,services=svcs,public=True)
 
-# ── STEP 8: PDF BUILDER ──
+# ── STEP 8: PDF BUILDER — ATS FRIENDLY ──
 def build_cv_pdf(user):
     from reportlab.lib.pagesizes import A4
     from reportlab.lib import colors
     from reportlab.lib.styles import ParagraphStyle
     from reportlab.lib.units import cm
     from reportlab.platypus import (SimpleDocTemplate, Paragraph,
-                                    Spacer, HRFlowable, Table, TableStyle)
-    buf=io.BytesIO(); p=user.profile; W=A4[0]-4.8*cm
-    doc=SimpleDocTemplate(buf,pagesize=A4,rightMargin=2*cm,leftMargin=2.8*cm,
-        topMargin=1.5*cm,bottomMargin=1.5*cm)
-    DARK=colors.HexColor("#1a1a2e"); ACCENT=colors.HexColor("#4a9eff")
-    TEXT=colors.HexColor("#2d2d2d"); GRAY=colors.HexColor("#666666")
-    def st(n,**kw): return ParagraphStyle(n,**kw)
-    NAME=st("N",fontName="Helvetica-Bold",fontSize=24,textColor=DARK,spaceAfter=2,leading=28)
-    JOB=st("J",fontName="Helvetica",fontSize=13,textColor=ACCENT,spaceAfter=10)
-    SH=st("SH",fontName="Helvetica-Bold",fontSize=10,textColor=ACCENT,spaceBefore=14,spaceAfter=4)
-    BODY=st("B",fontName="Helvetica",fontSize=10,textColor=TEXT,leading=15,spaceAfter=3)
-    SMALL=st("S",fontName="Helvetica",fontSize=9,textColor=GRAY,leading=13,spaceAfter=2)
-    B10=st("B10",fontName="Helvetica-Bold",fontSize=10,textColor=TEXT,spaceAfter=1)
-    CON=st("C",fontName="Helvetica",fontSize=9,textColor=GRAY,leading=14)
-    HR=lambda: HRFlowable(width=W,thickness=0.5,color=colors.HexColor("#dddddd"),spaceAfter=4)
-    story=[]
+                                    Spacer, HRFlowable)
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT
 
-    # ── Name & Title ──
-    story.append(Paragraph(user.name,NAME))
-    if p and p.title: story.append(Paragraph(p.title,JOB))
-    story.append(HRFlowable(width=W,thickness=2,color=ACCENT,spaceAfter=6))
+    buf = io.BytesIO()
+    p   = user.profile
+    W   = A4[0] - 3.6*cm
 
-    # ── Contact Row with clickable links ──
+    doc = SimpleDocTemplate(
+        buf, pagesize=A4,
+        rightMargin=1.8*cm, leftMargin=1.8*cm,
+        topMargin=1.2*cm,   bottomMargin=1.2*cm
+    )
+
+    BLACK  = colors.HexColor("#000000")
+    DGRAY  = colors.HexColor("#333333")
+    MGRAY  = colors.HexColor("#555555")
+    LGRAY  = colors.HexColor("#888888")
+    WHITE  = colors.white
+
+    def st(n, **kw):
+        return ParagraphStyle(n, **kw)
+
+    # ── Styles ──
+    NAME   = st("NM", fontName="Helvetica-Bold",   fontSize=20, textColor=BLACK,
+                alignment=TA_CENTER, spaceAfter=2, leading=24)
+    TITLE  = st("TL", fontName="Helvetica-Oblique", fontSize=11, textColor=DGRAY,
+                alignment=TA_CENTER, spaceAfter=4)
+    CONTACT= st("CT", fontName="Helvetica",         fontSize=8.5, textColor=DGRAY,
+                alignment=TA_CENTER, spaceAfter=2, leading=13)
+    SH     = st("SH", fontName="Helvetica-Bold",    fontSize=9, textColor=BLACK,
+                spaceBefore=7, spaceAfter=2, leading=12)
+    BODY   = st("BD", fontName="Helvetica",         fontSize=8.5, textColor=DGRAY,
+                leading=13, spaceAfter=2)
+    BULLET = st("BL", fontName="Helvetica",         fontSize=8.5, textColor=DGRAY,
+                leading=13, leftIndent=10, spaceAfter=1)
+    BOLD9  = st("B9", fontName="Helvetica-Bold",    fontSize=8.5, textColor=BLACK,
+                leading=13, spaceAfter=1)
+    SMALL  = st("SM", fontName="Helvetica",         fontSize=8, textColor=MGRAY,
+                leading=12, spaceAfter=1)
+    LINK   = st("LK", fontName="Helvetica",         fontSize=8, textColor=DGRAY,
+                leading=12, spaceAfter=2)
+
+    def HR(thick=0.5, space_before=3, space_after=4):
+        return HRFlowable(
+            width=W, thickness=thick,
+            color=colors.HexColor("#cccccc"),
+            spaceBefore=space_before, spaceAfter=space_after
+        )
+
+    def section(title):
+        return [
+            Spacer(1, 3),
+            Paragraph(title, SH),
+            HR(0.6, 1, 3),
+        ]
+
+    story = []
+
+    # ════════════════════════════════
+    # HEADER
+    # ════════════════════════════════
+    story.append(Paragraph(user.name.upper(), NAME))
+
+    if p and p.title:
+        story.append(Paragraph(p.title, TITLE))
+
+    # Contact line
+    contacts = []
     if p:
-        cs = []
-        if p.email:    cs.append(f'<a href="mailto:{p.email}" color="#4a9eff">{p.email}</a>')
-        if p.phone:    cs.append(f'☎ {p.phone}')
-        if p.city:     cs.append(f'📍 {p.city}')
-        if p.github:   cs.append(f'<a href="{p.github}" color="#4a9eff">GitHub</a>')
-        if p.linkedin: cs.append(f'<a href="{p.linkedin}" color="#4a9eff">LinkedIn</a>')
-        if p.portfolio:cs.append(f'<a href="{p.portfolio}" color="#4a9eff">Portfolio</a>')
-        if cs:
-            story.append(Paragraph("   |   ".join(cs), CON))
-            story.append(Spacer(1,8))
-        # ── Personal Info ──
-        if p:
-            personal = []
-            if p.dob:     personal.append(f"DOB: {p.dob}")
-            if p.gender:  personal.append(f"Gender: {p.gender}")
-            if p.cnic:    personal.append(f"CNIC: {p.cnic}")
-            if p.region:  personal.append(f"Region: {p.region}")
-            if personal:
-                story.append(Paragraph("   |   ".join(personal), CON))
-            if p.address and p.address.strip():
-                story.append(Paragraph(f"Address: {p.address}", CON))
-            if personal or (p.address and p.address.strip()):
-                story.append(Spacer(1, 8))
+        if p.email:
+            contacts.append(f'<a href="mailto:{p.email}" color="#000000">{p.email}</a>')
+        if p.phone:
+            contacts.append(p.phone)
+        if p.github:
+            contacts.append(f'<a href="{p.github}" color="#000000">{p.github.replace("https://","").replace("http://","")}</a>')
+        if p.linkedin:
+            contacts.append(f'<a href="{p.linkedin}" color="#000000">{p.linkedin.replace("https://","").replace("http://","")}</a>')
+        if p.portfolio:
+            contacts.append(f'<a href="{p.portfolio}" color="#000000">{p.portfolio.replace("https://","").replace("http://","")}</a>')
+        if p.city:
+            contacts.append(p.city)
 
+    if contacts:
+        story.append(Paragraph("  |  ".join(contacts), CONTACT))
 
-    # ── Summary ──
+    story.append(HR(1, 4, 4))
+
+    # ════════════════════════════════
+    # PROFESSIONAL SUMMARY
+    # ════════════════════════════════
     if p and p.summary and p.summary.strip():
-        story.append(Paragraph("PROFESSIONAL SUMMARY",SH)); story.append(HR())
-        story.append(Paragraph(p.summary,BODY))
+        story += section("PROFESSIONAL SUMMARY")
+        story.append(Paragraph(p.summary, BODY))
 
-    # ── Skills in 4-column grid ──
+    # ════════════════════════════════
+    # TECHNICAL SKILLS
+    # ════════════════════════════════
     if user.skills:
-        story.append(Paragraph("SKILLS",SH)); story.append(HR())
-        skill_names=[s.name for s in user.skills]
-        rows=[]
-        for i in range(0,len(skill_names),4):
-            row=skill_names[i:i+4]
-            while len(row)<4: row.append("")
-            rows.append([Paragraph(f"• {n}" if n else "",BODY) for n in row])
-        if rows:
-            skill_table=Table(rows,colWidths=[W/4]*4)
-            skill_table.setStyle(TableStyle([
-                ("TOPPADDING",(0,0),(-1,-1),3),
-                ("BOTTOMPADDING",(0,0),(-1,-1),3),
-                ("LEFTPADDING",(0,0),(-1,-1),0),
-            ]))
-            story.append(skill_table)
+        story += section("TECHNICAL SKILLS")
+        skill_str = "  •  ".join([s.name for s in user.skills])
+        story.append(Paragraph(skill_str, BODY))
 
-    # ── Experience ──
-    if user.experiences:
-        story.append(Paragraph("EXPERIENCE",SH)); story.append(HR())
-        for e in sorted(user.experiences,key=lambda x:x.order):
-            row=Table([[Paragraph(e.role,B10),Paragraph(e.year or "",SMALL)]],
-                colWidths=[W*.7,W*.3])
-            row.setStyle(TableStyle([
-                ("ALIGN",(1,0),(1,0),"RIGHT"),
-                ("TOPPADDING",(0,0),(-1,-1),0),
-                ("BOTTOMPADDING",(0,0),(-1,-1),0)
-            ]))
-            story.append(row)
-            if e.description: story.append(Paragraph(e.description,BODY))
-            story.append(Spacer(1,4))
-
-    # ── Education ──
-    if user.educations:
-        story.append(Paragraph("EDUCATION",SH)); story.append(HR())
-        for e in sorted(user.educations,key=lambda x:x.order):
-            row=Table([[Paragraph(e.degree or "",B10),Paragraph(e.batch or "",SMALL)]],
-                colWidths=[W*.7,W*.3])
-            row.setStyle(TableStyle([
-                ("ALIGN",(1,0),(1,0),"RIGHT"),
-                ("TOPPADDING",(0,0),(-1,-1),0),
-                ("BOTTOMPADDING",(0,0),(-1,-1),0)
-            ]))
-            story.append(row)
-            ic=e.institute or ""
-            if e.city: ic+=f", {e.city}"
-            story.append(Paragraph(ic,SMALL))
-            story.append(Spacer(1,4))
-
-    # ── Projects — grid names then details ──
+    # ════════════════════════════════
+    # PROJECTS
+    # ════════════════════════════════
     if user.projects:
-        story.append(Paragraph("PROJECTS",SH)); story.append(HR())
-        proj_names=[pr.name for pr in sorted(user.projects,key=lambda x:x.order)]
-        rows=[]
-        for i in range(0,len(proj_names),4):
-            row=proj_names[i:i+4]
-            while len(row)<4: row.append("")
-            rows.append([Paragraph(f"• {n}" if n else "",BODY) for n in row])
-        if rows:
-            proj_table=Table(rows,colWidths=[W/4]*4)
-            proj_table.setStyle(TableStyle([
-                ("TOPPADDING",(0,0),(-1,-1),3),
-                ("BOTTOMPADDING",(0,0),(-1,-1),3),
-                ("LEFTPADDING",(0,0),(-1,-1),0),
-            ]))
-            story.append(proj_table)
-        story.append(Spacer(1,6))
-        for pr in sorted(user.projects,key=lambda x:x.order):
-            story.append(Paragraph(pr.name,B10))
-            if pr.description: story.append(Paragraph(pr.description,BODY))
-            lks=[]
-            if pr.live_link:   lks.append(f'<a href="{pr.live_link}" color="#4a9eff">Live Demo</a>')
-            if pr.github_link: lks.append(f'<a href="{pr.github_link}" color="#4a9eff">GitHub</a>')
-            if lks: story.append(Paragraph("   |   ".join(lks),SMALL))
-            if pr.tech_stack: story.append(Paragraph(f"Tech: {pr.tech_stack}",SMALL))
-            story.append(Spacer(1,4))
+        story += section("PROJECTS")
+        for pr in sorted(user.projects, key=lambda x: x.order):
+            story.append(Paragraph(pr.name, BOLD9))
+            if pr.description:
+                for line in pr.description.split('\n'):
+                    if line.strip():
+                        story.append(Paragraph(f"• {line.strip()}", BULLET))
+            if pr.tech_stack:
+                story.append(Paragraph(
+                    f"Tech Stack: {pr.tech_stack}", SMALL))
+            lks = []
+            if pr.github_link:
+                lks.append(f'GitHub: <a href="{pr.github_link}" color="#000000">{pr.github_link.replace("https://","")}</a>')
+            if pr.live_link:
+                lks.append(f'Live: <a href="{pr.live_link}" color="#000000">{pr.live_link.replace("https://","")}</a>')
+            if lks:
+                story.append(Paragraph("  |  ".join(lks), LINK))
+            story.append(Spacer(1, 3))
 
-    # ── Certificates — grid layout ──
+    # ════════════════════════════════
+    # EXPERIENCE
+    # ════════════════════════════════
+    if user.experiences:
+        story += section("EXPERIENCE")
+        for e in sorted(user.experiences, key=lambda x: x.order):
+            role_year = f'<b>{e.role}</b>'
+            if e.year:
+                role_year += f'  <font color="#888888">{e.year}</font>'
+            story.append(Paragraph(role_year, BODY))
+            if e.description:
+                for line in e.description.split('\n'):
+                    if line.strip():
+                        story.append(Paragraph(f"• {line.strip()}", BULLET))
+            story.append(Spacer(1, 3))
+
+    # ════════════════════════════════
+    # EDUCATION
+    # ════════════════════════════════
+    if user.educations:
+        story += section("EDUCATION")
+        for e in sorted(user.educations, key=lambda x: x.order):
+            story.append(Paragraph(f"<b>{e.degree}</b>", BODY))
+            inst = e.institute or ""
+            if e.city:    inst += f", {e.city}"
+            if e.batch:   inst += f"  |  {e.batch}"
+            if inst:
+                story.append(Paragraph(inst, SMALL))
+            story.append(Spacer(1, 3))
+
+    # ════════════════════════════════
+    # CERTIFICATIONS
+    # ════════════════════════════════
     if user.certificates:
-        story.append(Paragraph("CERTIFICATIONS",SH)); story.append(HR())
-        cert_names=[c.name for c in sorted(user.certificates,key=lambda x:x.order)]
-        rows=[]
-        for i in range(0,len(cert_names),4):
-            row=cert_names[i:i+4]
-            while len(row)<4: row.append("")
-            rows.append([Paragraph(f"• {n}" if n else "",BODY) for n in row])
-        if rows:
-            cert_table=Table(rows,colWidths=[W/4]*4)
-            cert_table.setStyle(TableStyle([
-                ("TOPPADDING",(0,0),(-1,-1),3),
-                ("BOTTOMPADDING",(0,0),(-1,-1),3),
-                ("LEFTPADDING",(0,0),(-1,-1),0),
-            ]))
-            story.append(cert_table)
+        story += section("CERTIFICATIONS")
+        for c in sorted(user.certificates, key=lambda x: x.order):
+            line = f"• {c.name}"
+            if c.link:
+                line += f'  —  <a href="{c.link}" color="#000000">{c.link.replace("https://","")}</a>'
+            story.append(Paragraph(line, BODY))
 
-    # ── Languages — grid layout ──
+    # ════════════════════════════════
+    # LANGUAGES
+    # ════════════════════════════════
     if user.languages:
-        story.append(Paragraph("LANGUAGES",SH)); story.append(HR())
-        lang_names=[f"{l.name} ({l.level})" for l in user.languages]
-        rows=[]
-        for i in range(0,len(lang_names),4):
-            row=lang_names[i:i+4]
-            while len(row)<4: row.append("")
-            rows.append([Paragraph(f"• {n}" if n else "",BODY) for n in row])
-        if rows:
-            lang_table=Table(rows,colWidths=[W/4]*4)
-            lang_table.setStyle(TableStyle([
-                ("TOPPADDING",(0,0),(-1,-1),3),
-                ("BOTTOMPADDING",(0,0),(-1,-1),3),
-                ("LEFTPADDING",(0,0),(-1,-1),0),
-            ]))
-            story.append(lang_table)
+        story += section("LANGUAGES")
+        lang_str = "  •  ".join([
+            f"{l.name} ({l.level})" for l in user.languages
+        ])
+        story.append(Paragraph(lang_str, BODY))
 
-    # ── Social Links ──
-    if p:
-        socials=[]
-        if p.whatsapp:  socials.append(f'<a href="https://wa.me/{p.whatsapp.replace("+","")}" color="#4a9eff">WhatsApp</a>')
-        if p.facebook:  socials.append(f'<a href="{p.facebook}" color="#4a9eff">Facebook</a>')
-        if p.instagram: socials.append(f'<a href="{p.instagram}" color="#4a9eff">Instagram</a>')
-        if p.telegram:  socials.append(f'<a href="{p.telegram}" color="#4a9eff">Telegram</a>')
-        if p.twitter:   socials.append(f'<a href="{p.twitter}" color="#4a9eff">Twitter</a>')
-        if socials:
-            story.append(Paragraph("SOCIAL",SH)); story.append(HR())
-            story.append(Paragraph("   |   ".join(socials),CON))
-
-    doc.build(story); buf.seek(0); return buf
-
+    # ════════════════════════════════
+    # BUILD PDF
+    # ════════════════════════════════
+    doc.build(story)
+    buf.seek(0)
+    return buf
 
 @app.route("/debug-upload", methods=["GET","POST"])
 def debug_upload():
@@ -545,24 +535,11 @@ def debug_upload():
     '''
 
 # ── STEP 9: INIT DB AND RUN ──
+# ── STEP 9: INIT DB AND RUN ──
 with app.app_context():
     db.create_all()
-    # ── Add new columns if they don't exist (safe migration) ──
-    from sqlalchemy import text
-    with db.engine.connect() as conn:
-        for col, typ in [
-            ("dob",     "VARCHAR(50)"),
-            ("cnic",    "VARCHAR(20)"),
-            ("gender",  "VARCHAR(20)"),
-            ("region",  "VARCHAR(100)"),
-            ("address", "TEXT"),
-        ]:
-            try:
-                conn.execute(text(f"ALTER TABLE profiles ADD COLUMN {col} {typ}"))
-                conn.commit()
-            except Exception:
-                pass  # Column already exists — skip
     for f in ["avatars","projects","certificates"]:
         os.makedirs(os.path.join("static","uploads",f),exist_ok=True)
+
 if __name__ == "__main__":
     app.run(debug=True,port=5000)

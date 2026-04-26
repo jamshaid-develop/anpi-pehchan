@@ -42,54 +42,6 @@
           <input type="file" name="avatar" accept="image/jpeg,image/png,image/jpg"></div>
       </div>
 
-    <!-- SECTION 2: Personal Information -->
-    <div class="form-section">
-        <h3>Personal Information</h3>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Date of Birth</label>
-                <input type="text" name="dob"
-                    value="{{ profile.dob or '' }}"
-                    placeholder="e.g. 15 March 2002">
-            </div>
-            <div class="form-group">
-                <label>CNIC Number</label>
-                <input type="text" name="cnic"
-                    value="{{ profile.cnic or '' }}"
-                    placeholder="35202-1234567-1">
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Gender</label>
-                <select name="gender">
-                     <option value="">Select Gender</option>
-                     {% if profile and profile.gender == 'Male' %}
-                        <option value="Male" selected>Male</option>
-                        <option value="Female">Female</option>
-                     {% elif profile and profile.gender == 'Female' %}
-                         <option value="Male">Male</option>
-                          <option value="Female" selected>Female</option>
-                    {% else %}
-                         <option value="Male">Male</option>
-                         <option value="Female">Female</option>
-                    {% endif %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Region / Faith</label>
-                <input type="text" name="region"
-                    value="{{ profile.region or '' }}"
-                    placeholder="Muslim — Punjab, Pakistan">
-            </div>
-        </div>
-        <div class="form-group">
-            <label>Full Address</label>
-            <textarea name="address" rows="2"
-                placeholder="House No, Street, City, Province">{{ profile.address or '' }}</textarea>
-        </div>
-    </div>
-
     <!-- SECTION 3: Contact Information -->
     <div class="form-section">
         <h3>Contact Information</h3>
